@@ -9,7 +9,7 @@ readme = "README.md"
 homepage = "https://github.com/kovyrin/vitess-grpc-rust"
 repository = "https://github.com/kovyrin/vitess-grpc-rust.git"
 documentation = "https://docs.rs/vitess-grpc"
-keywords = ["vitess", "grpc", "client", "database", "mysql", "streaming", "cdc"]
+keywords = ["vitess", "grpc", "client", "database", "mysql"]
 
 [dependencies]
 tonic = "0.9"
