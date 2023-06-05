@@ -5,8 +5,10 @@ edition = "2021"
 authors = ["Oleksiy Kovyrin <oleksiy@kovyrin.net>"]
 description = "Vitess gRPC client library, auto-generated from the Vitess proto files using tonic-build."
 license = "MIT OR Apache-2.0"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+readme = "README.md"
+repository = "https://github.com/kovyrin/vitess_grpc_rs"
+documentation = "https://docs.rs/vitess_grpc"
+keywords = ["vitess", "grpc", "client", "database", "mysql", "streaming", "cdc"]
 
 [dependencies]
 tonic = "0.9"
