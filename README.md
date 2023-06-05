@@ -1,5 +1,8 @@
 # gRPC Client for Vitess
 
+[![Crates.io](https://img.shields.io/crates/v/vitess-grpc)](https://crates.io/crates/vitess-grpc)
+[![Docs.rs](https://docs.rs/vitess-grpc/badge.svg)](https://docs.rs/vitess-grpc)
+
 This is a Rust gRPC client for Vitess. It is generated from the Vitess proto files using
 [tonic](https://github.com/hyperium/tonic).
 
