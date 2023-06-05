@@ -1,19 +1,21 @@
 [package]
-name = "vitess_grpc"
+name = "vitess-grpc"
 version = "0.1.0"
 edition = "2021"
 authors = ["Oleksiy Kovyrin <oleksiy@kovyrin.net>"]
 description = "Vitess gRPC client library, auto-generated from the Vitess proto files using tonic-build."
 license = "MIT OR Apache-2.0"
 readme = "README.md"
-homepage = "https://github.com/kovyrin/vitess_grpc_rs"
-repository = "https://github.com/kovyrin/vitess_grpc_rs.git"
-documentation = "https://docs.rs/vitess_grpc"
+homepage = "https://github.com/kovyrin/vitess-grpc-rust"
+repository = "https://github.com/kovyrin/vitess-grpc-rust.git"
+documentation = "https://docs.rs/vitess-grpc"
 keywords = ["vitess", "grpc", "client", "database", "mysql", "streaming", "cdc"]
 
 [dependencies]
 tonic = "0.9"
 prost = "0.11"
+
+[dev-dependencies]
 tokio = { version = "1.5", features = ["full"] }
 
 [build-dependencies]

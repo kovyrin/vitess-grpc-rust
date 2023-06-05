@@ -9,7 +9,7 @@ To use this crate, add the following to your Cargo.toml:
 
 ```toml
 [dependencies]
-vitess_grpc = "0.1"
+vitess-grpc = "0.1"
 tokio = { version = "1.0", features = ["full"] }
 ```
 
