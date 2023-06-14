@@ -14,8 +14,10 @@ services:
       - "15301:15301"
       - "15302:15302"
       - "15303:15303"
+    volumes:
+      - .:/examples
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "--host=127.0.0.1", "--port=15303"]
+      test: ["CMD", "/examples/scripts/wait-for-mysql"]
       interval: 5s
       timeout: 2s
       retries: 10

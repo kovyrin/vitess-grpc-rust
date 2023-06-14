@@ -6,7 +6,12 @@ use anyhow::Result;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut client = VitessClient::connect("http://127.0.0.1:15301").await.expect("Failed to connect to Vitess");
+    // See docker-compose.yml for the details of the vitess deployment
+    let vitess_url = "http://127.0.0.1:15301";
+    let vitess_keyspace = "commerce".to_string();
+
+    // Connect to Vitess
+    let mut client = VitessClient::connect(vitess_url).await.expect("Failed to connect to Vitess");
 
     // Configure the details of VStream
     let vstream_flags = VStreamFlags {
@@ -19,7 +24,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let initial_position = VGtid {
         shard_gtids: vec![
             ShardGtid {
-                keyspace: "commerce".to_string(),
+                keyspace: vitess_keyspace,
                 shard: "".to_string(),
                 gtid: "current".to_string(),
                 ..Default::default()
@@ -35,12 +40,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ..Default::default()
     };
 
-    let response = client.v_stream(request).await.expect("Failed to start VStream");
+    let vstream = client.v_stream(request).await.expect("Failed to start VStream");
 
     // Stream messages one at a time
-    let mut resp_stream = response.into_inner();
-    while let Some(message) = resp_stream.message().await? {
-        println!("Received {:?}", message);
+    let mut response_stream = vstream.into_inner();
+    while let Some(response) = response_stream.message().await? {
+        for message in response.events {
+            println!("Received Vitess event: {:?}\n", message);
+        }
     }
 
     Ok(())
