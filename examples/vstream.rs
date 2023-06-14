@@ -2,10 +2,11 @@ use vitess_grpc::binlogdata::{VGtid, ShardGtid};
 use vitess_grpc::topodata::TabletType;
 use vitess_grpc::vtgate::{VStreamRequest, VStreamFlags};
 use vitess_grpc::vtgateservice::vitess_client::VitessClient;
+use anyhow::Result;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut client = VitessClient::connect("http://localhost:16113").await.unwrap();
+    let mut client = VitessClient::connect("http://127.0.0.1:15301").await.expect("Failed to connect to Vitess");
 
     // Configure the details of VStream
     let vstream_flags = VStreamFlags {
@@ -18,7 +19,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let initial_position = VGtid {
         shard_gtids: vec![
             ShardGtid {
-                keyspace: "ruby_vstream_test".to_string(),
+                keyspace: "commerce".to_string(),
                 shard: "".to_string(),
                 gtid: "current".to_string(),
                 ..Default::default()
@@ -33,7 +34,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         flags: Some(vstream_flags),
         ..Default::default()
     };
-    let response = client.v_stream(request).await.unwrap();
+
+    let response = client.v_stream(request).await.expect("Failed to start VStream");
 
     // Stream messages one at a time
     let mut resp_stream = response.into_inner();

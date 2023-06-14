@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  vttestserver:
+    image: docker.io/kovyrin/vttestserver-arm64v8:mysql-8.0.31-vitess-v16.0.2
+    environment:
+      PORT: 15300
+      KEYSPACES: "commerce,sharded"
+      NUM_SHARDS: "1,2"
+      MYSQL_MAX_CONNECTIONS: 10000
+      MYSQL_BIND_HOST: "0.0.0.0"
+    ports:
+      - "15300:15300"
+      - "15301:15301"
+      - "15302:15302"
+      - "15303:15303"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--host=127.0.0.1", "--port=15303"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
