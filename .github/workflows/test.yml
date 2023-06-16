@@ -30,6 +30,9 @@ jobs:
         with:
           toolchain: ${{ matrix.toolchain }}
 
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v2
+
       - name: cargo generate-lockfile
         # enable this ci template to run regardless of whether the lockfile is checked in or not
         if: hashFiles('Cargo.lock') == ''
@@ -104,6 +107,9 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v2
 
       - name: cargo install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
