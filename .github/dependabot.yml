@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: daily
   - package-ecosystem: cargo
-    directory: /
+    directory: /vitess-grpc
     schedule:
       interval: daily
     ignore:
