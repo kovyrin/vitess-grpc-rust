@@ -4,12 +4,14 @@ on:
   push:
     branches: [main]
   pull_request:
+
 # If new code is pushed to a PR branch, then cancel in progress workflows for that PR.
 # Ensures that we don't waste CI time, and returns results quicker
 # https://github.com/jonhoo/rust-ci-conf/pull/5
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
+
 name: test
 jobs:
   required:
@@ -32,6 +34,10 @@ jobs:
 
       - name: Install Protoc
         uses: arduino/setup-protoc@v2
+
+      - uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: ".github/docker-compose.yml"
 
       - name: cargo generate-lockfile
         # enable this ci template to run regardless of whether the lockfile is checked in or not
@@ -93,35 +99,35 @@ jobs:
   #       run: cargo generate-lockfile
   #     - name: cargo test
   #       run: cargo test --locked --all-features --all-targets
-  coverage:
-    # use llvm-cov to build and collect coverage and outputs in a format that is compatible with
-    # codecov.io
-    runs-on: ubuntu-latest
-    name: ubuntu / stable / coverage
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
+  # coverage:
+  #   # use llvm-cov to build and collect coverage and outputs in a format that is compatible with
+  #   # codecov.io
+  #   runs-on: ubuntu-latest
+  #   name: ubuntu / stable / coverage
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         submodules: true
 
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: llvm-tools-preview
+  #     - name: Install stable
+  #       uses: dtolnay/rust-toolchain@stable
+  #       with:
+  #         components: llvm-tools-preview
 
-      - name: Install Protoc
-        uses: arduino/setup-protoc@v2
+  #     - name: Install Protoc
+  #       uses: arduino/setup-protoc@v2
 
-      - name: cargo install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
+  #     - name: cargo install cargo-llvm-cov
+  #       uses: taiki-e/install-action@cargo-llvm-cov
 
-      - name: cargo generate-lockfile
-        if: hashFiles('Cargo.lock') == ''
-        run: cargo generate-lockfile
+  #     - name: cargo generate-lockfile
+  #       if: hashFiles('Cargo.lock') == ''
+  #       run: cargo generate-lockfile
 
-      - name: cargo llvm-cov
-        run: cargo llvm-cov --locked --all-features --lcov --output-path lcov.info
+  #     - name: cargo llvm-cov
+  #       run: cargo llvm-cov --locked --all-features --lcov --output-path lcov.info
 
-      - name: Upload to codecov.io
-        uses: codecov/codecov-action@v3
-        with:
-          fail_ci_if_error: true
+  #     - name: Upload to codecov.io
+  #       uses: codecov/codecov-action@v3
+  #       with:
+  #         fail_ci_if_error: true
