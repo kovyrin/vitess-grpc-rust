@@ -15,7 +15,7 @@ services:
       - "15302:15302" # mysql
       - "15303:15303"
     volumes:
-      - scripts:/scripts
+      - ./scripts:/scripts
     healthcheck:
       test: ["CMD", "/scripts/wait-for-mysql"]
       interval: 5s
