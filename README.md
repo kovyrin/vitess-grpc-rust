@@ -29,6 +29,9 @@ cargo run --example <example_name>
 Available examples are:
 * [vstream-consumer](examples/vstream.rs): A simple vstream consumer, which prints the events it receives.
 
+
+Before running the examples, you will need to start Vitess locally. An easy way to do this is to use the `examples/scripts/start-vttestserver` script, which will start a local Vitess cluster in Docker (or Podman) and configure a simple schema inside you can use for testing.
+
 ## License
 
 The files in the `proto` directory are copied from the [Vitess repository](https://github.com/vitessio/vitess/tree/main/proto) and are licensed under the Apache License, Version 2.0. See the

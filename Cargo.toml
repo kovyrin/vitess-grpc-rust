@@ -21,3 +21,8 @@ anyhow = "1.0"
 
 [build-dependencies]
 tonic-build = "0.9"
+
+[workspace]
+members = [
+  "vitess-grpc-test",
+]

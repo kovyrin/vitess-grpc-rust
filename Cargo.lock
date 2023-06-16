@@ -967,6 +967,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "vitess-grpc-test"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "prost",
+ "tokio",
+ "tonic",
+ "vitess-grpc",
+]
+
+[[package]]
 name = "want"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
