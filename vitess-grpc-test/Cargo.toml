@@ -13,3 +13,4 @@ anyhow = "1.0"
 tonic = "0.9"
 prost = "0.11"
 tokio = { version = "1.5", features = ["full"] }
+mysql = "24.0"
