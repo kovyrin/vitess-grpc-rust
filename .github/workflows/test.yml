@@ -4,7 +4,9 @@ on:
   push:
     branches: [main]
   pull_request:
-# Spend CI time only on latest ref: https://github.com/jonhoo/rust-ci-conf/pull/5
+# If new code is pushed to a PR branch, then cancel in progress workflows for that PR.
+# Ensures that we don't waste CI time, and returns results quicker
+# https://github.com/jonhoo/rust-ci-conf/pull/5
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -15,6 +17,8 @@ jobs:
     name: ubuntu / ${{ matrix.toolchain }}
     strategy:
       matrix:
+        # run on stable and beta to ensure that tests won't break on the next version of the rust
+        # toolchain
         toolchain: [stable, beta]
     steps:
       - uses: actions/checkout@v3
@@ -25,6 +29,7 @@ jobs:
         with:
           toolchain: ${{ matrix.toolchain }}
       - name: cargo generate-lockfile
+        # enable this ci template to run regardless of whether the lockfile is checked in or not
         if: hashFiles('Cargo.lock') == ''
         run: cargo generate-lockfile
       # https://twitter.com/jonhoo/status/1571290371124260865
@@ -34,6 +39,17 @@ jobs:
       - name: cargo test --doc
         run: cargo test --locked --all-features --doc
   minimal:
+    # This action chooses the oldest version of the dependencies to ensure that this crate is
+    # compatible with the minimal version that this crate and its dependencies require.
+    # This will pickup issues where this create relies on functionality that was introduced
+    # later than the actual version specified (e.g. when we choose just a major version, but a
+    # method was added after this version).
+    #
+    # This particular check can be difficult to get to succeed as often transitive dependencies
+    # may be incorrectly specified (e.g. a dependency specifies 1.0 but really requires 1.1.5).
+    # There is an alternative flag available -Zminimal-direct that uses the minimal versions for
+    # direct dependencies of this crate, while selecting the maximal versions for the transitive
+    # dependencies
     runs-on: ubuntu-latest
     name: ubuntu / stable / minimal-versions
     steps:
@@ -51,6 +67,7 @@ jobs:
       - name: cargo test
         run: cargo test --locked --all-features --all-targets
   os-check:
+    # run cargo test on mac and windows
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} / stable
     strategy:
@@ -69,6 +86,8 @@ jobs:
       - name: cargo test
         run: cargo test --locked --all-features --all-targets
   coverage:
+    # use llvm-cov to build and collect coverage and outputs in a format that is compatible with
+    # codecov.io
     runs-on: ubuntu-latest
     name: ubuntu / stable / coverage
     steps:

@@ -1,10 +1,18 @@
+# This workflow runs checks for unsafe code. In crates that don't have any unsafe code, this can be
+# removed. Runs:
+# - miri - detects undefined behavior and memory leaks
+# - address santizer - detects memory errors
+# - leak sanitizer - detects memory leaks
+# - loom - Permutation testing for concurrent code https://crates.io/crates/loom
 permissions:
   contents: read
 on:
   push:
     branches: [main]
   pull_request:
-# Spend CI time only on latest ref: https://github.com/jonhoo/rust-ci-conf/pull/5
+# If new code is pushed to a PR branch, then cancel in progress workflows for that PR.
+# Ensures that we don't waste CI time, and returns results quicker
+# https://github.com/jonhoo/rust-ci-conf/pull/5
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
