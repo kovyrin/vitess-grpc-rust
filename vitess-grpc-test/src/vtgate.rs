@@ -4,7 +4,7 @@ use vitess_grpc::vtgate::{VStreamRequest, VStreamFlags};
 use vitess_grpc::binlogdata::{VGtid, ShardGtid, VEventType};
 
 #[tokio::test]
-async fn integration() {
+async fn vstream_integration() {
     // See docker-compose.yml for the details of the vitess deployment
     let vitess_url = "http://127.0.0.1:15301";
     let vitess_keyspace = "commerce".to_string();
