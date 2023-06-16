@@ -7,7 +7,7 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-vitess-grpc = { path = "../" }
+vitess-grpc = { path = "../vitess-grpc" }
 
 anyhow = "1.0"
 tonic = "0.9"
