@@ -19,8 +19,8 @@ async fn vstream_integration() {
     let pool = Pool::new(mysql_opts).expect("Failed to connect to MySQL");
     let mut conn = pool.get_conn().expect("Failed to get MySQL connection");
 
-    // TRUNCATE the table to ensure we have a clean slate
-    let _ = conn.query_drop("TRUNCATE TABLE product");
+    // Reset the database state
+    let _ = conn.query_drop("DROP TABLE IF EXISTS fruit");
 
     // Connect to Vitess via gRPC
     let vitess_url = format!("http://{}:{}", VITESS_HOST, VITESS_PORT);
@@ -44,34 +44,49 @@ async fn vstream_integration() {
     let vstream = client.v_stream(request).await.expect("Failed to start VStream");
     let mut response_stream = vstream.into_inner();
 
+    //-------------------------------------------------------------------------
     // The VStream should send us a set of messages describing the current position
     let response = response_stream.message().await.unwrap().unwrap();
     assert_eq!(response.events.len(), 2);
     dbg!(&response);
 
-    let message1 = &response.events[0];
-    assert_eq!(message1.r#type, VEventType::Vgtid as i32);
-    assert_eq!(message1.keyspace, vitess_keyspace);
-    assert_eq!(message1.shard, "0");
+    let vgtid = &response.events[0];
+    assert_eq!(vgtid.r#type, VEventType::Vgtid as i32);
+    assert_eq!(vgtid.keyspace, vitess_keyspace);
+    assert_eq!(vgtid.shard, "0");
 
-    let vgtid = message1.vgtid.as_ref().unwrap();
+    let vgtid = vgtid.vgtid.as_ref().unwrap();
     assert_eq!(vgtid.shard_gtids.len(), 1);
     assert_eq!(vgtid.shard_gtids[0].keyspace, vitess_keyspace);
     assert!(vgtid.shard_gtids[0].gtid.starts_with("MySQL"));
 
-    let message2 = &response.events[1];
-    assert_eq!(message2.r#type, VEventType::Other as i32);
-    assert_eq!(message2.keyspace, VITESS_KEYSPACE.to_string());
-    assert_eq!(message2.shard, "0");
-    assert_eq!(message2.vgtid, None);
+    let other = &response.events[1];
+    assert_eq!(other.r#type, VEventType::Other as i32);
+    assert_eq!(other.keyspace, VITESS_KEYSPACE.to_string());
+    assert_eq!(other.shard, "0");
+    assert_eq!(other.vgtid, None);
 
-    // Insert a row into the table
-    let _ = conn.query_drop("INSERT INTO product SET sku='sku-1', description='Product 1', price=42");
+    //-------------------------------------------------------------------------
+    // Create a new table
+    let _ = conn.query_drop("CREATE TABLE fruit (id INT, name VARCHAR(255), PRIMARY KEY (id))");
 
-    // The VStream should send us a set of messages describing the change
+    // Vitess should describe the schema change to us
     let response = response_stream.message().await.unwrap().unwrap();
-    assert_eq!(response.events.len(), 5); // BEGIN, FIELD, ROW, VGTID, COMMIT
     dbg!(&response);
+    assert_eq!(response.events.len(), 2); // VGTID, DDL
+
+    let ddl = &response.events[1];
+    assert_eq!(ddl.r#type, VEventType::Ddl as i32);
+    assert!(ddl.statement.starts_with("create table fruit"));
+
+    //-------------------------------------------------------------------------
+    // Insert a row into the table
+    let _ = conn.query_drop("INSERT INTO fruit SET id=1, name='banana'");
+
+    // The VStream should send us a set of messages describing the transaction
+    let response = response_stream.message().await.unwrap().unwrap();
+    dbg!(&response);
+    assert_eq!(response.events.len(), 5); // BEGIN, FIELD, ROW, VGTID, COMMIT
 
     // BEGIN event
     let begin = &response.events[0];
@@ -81,15 +96,15 @@ async fn vstream_integration() {
     let field = &response.events[1];
     assert_eq!(field.r#type, VEventType::Field as i32);
     let field_event = field.field_event.as_ref().unwrap();
-    assert_eq!(field_event.table_name, "commerce.product");
-    assert_eq!(field_event.fields.len(), 3);
+    assert_eq!(field_event.table_name, "commerce.fruit");
+    assert_eq!(field_event.fields.len(), 2);
 
     // ROW event describing the inserted row
     let row = &response.events[2];
     assert_eq!(row.r#type, VEventType::Row as i32);
 
     let row_event = row.row_event.as_ref().unwrap();
-    assert_eq!(row_event.table_name, "commerce.product");
+    assert_eq!(row_event.table_name, "commerce.fruit");
     assert_eq!(row_event.row_changes.len(), 1);
 
     // The row change should be an INSERT (no before state, after state is present)
@@ -104,4 +119,51 @@ async fn vstream_integration() {
     // COMMIT event
     let commit = &response.events[4];
     assert_eq!(commit.r#type, VEventType::Commit as i32);
+
+    //-------------------------------------------------------------------------
+    // Delete the row from the table
+    let _ = conn.query_drop("DELETE FROM fruit WHERE id=1");
+
+    // The VStream should send us a set of messages describing the change
+    let response = response_stream.message().await.unwrap().unwrap();
+    dbg!(&response);
+    assert_eq!(response.events.len(), 4); // BEGIN, ROW, VGTID, COMMIT
+
+    // BEGIN event
+    let begin = &response.events[0];
+    assert_eq!(begin.r#type, VEventType::Begin as i32);
+
+    // ROW event describing the deleted row
+    let row = &response.events[1];
+    assert_eq!(row.r#type, VEventType::Row as i32);
+
+    let row_event = row.row_event.as_ref().unwrap();
+    assert_eq!(row_event.table_name, "commerce.fruit");
+    assert_eq!(row_event.row_changes.len(), 1);
+
+    // The row change should be a DELETE (before state is present, no after state)
+    let row_change = &row_event.row_changes[0];
+    assert!(row_change.before.is_some());
+    assert_eq!(row_change.after, None);
+
+    // VGTID event describing the current position after the changes
+    let vgtid = &response.events[2];
+    assert_eq!(vgtid.r#type, VEventType::Vgtid as i32);
+
+    // COMMIT event
+    let commit = &response.events[3];
+    assert_eq!(commit.r#type, VEventType::Commit as i32);
+
+    //-------------------------------------------------------------------------
+    // Finally, drop the table
+    let _ = conn.query_drop("DROP TABLE fruit");
+
+    // The VStream should send us a set of messages describing the schema change
+    let response = response_stream.message().await.unwrap().unwrap();
+    dbg!(&response);
+    assert_eq!(response.events.len(), 2); // VGTID, DDL
+
+    let ddl = &response.events[1];
+    assert_eq!(ddl.r#type, VEventType::Ddl as i32);
+    assert!(ddl.statement.starts_with("DROP TABLE"));
 }
