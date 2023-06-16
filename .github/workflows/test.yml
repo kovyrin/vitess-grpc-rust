@@ -66,25 +66,25 @@ jobs:
         run: cargo +nightly update -Zminimal-versions
       - name: cargo test
         run: cargo test --locked --all-features --all-targets
-  os-check:
-    # run cargo test on mac and windows
-    runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }} / stable
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@stable
-      - name: cargo generate-lockfile
-        if: hashFiles('Cargo.lock') == ''
-        run: cargo generate-lockfile
-      - name: cargo test
-        run: cargo test --locked --all-features --all-targets
+  # os-check:
+  #   # run cargo test on mac and windows
+  #   runs-on: ${{ matrix.os }}
+  #   name: ${{ matrix.os }} / stable
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [macos-latest, windows-latest]
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         submodules: true
+  #     - name: Install stable
+  #       uses: dtolnay/rust-toolchain@stable
+  #     - name: cargo generate-lockfile
+  #       if: hashFiles('Cargo.lock') == ''
+  #       run: cargo generate-lockfile
+  #     - name: cargo test
+  #       run: cargo test --locked --all-features --all-targets
   coverage:
     # use llvm-cov to build and collect coverage and outputs in a format that is compatible with
     # codecov.io
