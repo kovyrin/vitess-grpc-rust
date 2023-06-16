@@ -1,8 +1,8 @@
-use vitess_grpc::binlogdata::{VGtid, ShardGtid};
-use vitess_grpc::topodata::TabletType;
-use vitess_grpc::vtgate::{VStreamRequest, VStreamFlags};
-use vitess_grpc::vtgateservice::vitess_client::VitessClient;
 use anyhow::Result;
+use vitess_grpc::binlogdata::{ShardGtid, VGtid};
+use vitess_grpc::topodata::TabletType;
+use vitess_grpc::vtgate::{VStreamFlags, VStreamRequest};
+use vitess_grpc::vtgateservice::vitess_client::VitessClient;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -11,7 +11,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let vitess_keyspace = "commerce".to_string();
 
     // Connect to Vitess
-    let mut client = VitessClient::connect(vitess_url).await.expect("Failed to connect to Vitess");
+    let mut client = VitessClient::connect(vitess_url)
+        .await
+        .expect("Failed to connect to Vitess");
 
     // Configure the details of VStream
     let vstream_flags = VStreamFlags {
@@ -22,14 +24,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Start from the current position
     let initial_position = VGtid {
-        shard_gtids: vec![
-            ShardGtid {
-                keyspace: vitess_keyspace,
-                shard: "".to_string(),
-                gtid: "current".to_string(),
-                ..Default::default()
-            },
-        ],
+        shard_gtids: vec![ShardGtid {
+            keyspace: vitess_keyspace,
+            shard: "".to_string(),
+            gtid: "current".to_string(),
+            ..Default::default()
+        }],
     };
 
     // Make the VStream API request to start streaming changes from the cluster
@@ -40,7 +40,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ..Default::default()
     };
 
-    let vstream = client.v_stream(request).await.expect("Failed to start VStream");
+    let vstream = client
+        .v_stream(request)
+        .await
+        .expect("Failed to start VStream");
 
     // Stream messages one at a time
     let mut response_stream = vstream.into_inner();

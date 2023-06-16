@@ -1,9 +1,9 @@
-use vitess_grpc::vtgateservice::vitess_client::VitessClient;
+use vitess_grpc::binlogdata::{ShardGtid, VEventType, VGtid};
 use vitess_grpc::vtgate::VStreamRequest;
-use vitess_grpc::binlogdata::{VGtid, ShardGtid, VEventType};
+use vitess_grpc::vtgateservice::vitess_client::VitessClient;
 
-use mysql::*;
 use mysql::prelude::*;
+use mysql::*;
 
 // See docker-compose.yml for the details of the vitess deployment
 const VITESS_HOST: &str = "127.0.0.1";
@@ -14,7 +14,10 @@ const VITESS_KEYSPACE: &str = "commerce";
 #[tokio::test]
 async fn vstream_integration() {
     // Connect to Vitess via the MySQL port
-    let mysql_url = format!("mysql://root:@{}:{}/{}", VITESS_HOST, MYSQL_PORT, VITESS_KEYSPACE);
+    let mysql_url = format!(
+        "mysql://root:@{}:{}/{}",
+        VITESS_HOST, MYSQL_PORT, VITESS_KEYSPACE
+    );
     let mysql_opts = Opts::from_url(&mysql_url.as_str()).expect("Failed to parse MySQL URL");
     let pool = Pool::new(mysql_opts).expect("Failed to connect to MySQL");
     let mut conn = pool.get_conn().expect("Failed to get MySQL connection");
@@ -24,24 +27,30 @@ async fn vstream_integration() {
 
     // Connect to Vitess via gRPC
     let vitess_url = format!("http://{}:{}", VITESS_HOST, VITESS_PORT);
-    let mut client = VitessClient::connect(vitess_url).await.expect("Failed to connect to Vitess");
+    let mut client = VitessClient::connect(vitess_url)
+        .await
+        .expect("Failed to connect to Vitess");
 
     // Start from the current position
     let vitess_keyspace = VITESS_KEYSPACE.to_string();
     let initial_position = VGtid {
-        shard_gtids: vec![
-            ShardGtid {
-                keyspace: vitess_keyspace.clone(),
-                shard: "".to_string(),
-                gtid: "current".to_string(),
-                ..Default::default()
-            },
-        ],
+        shard_gtids: vec![ShardGtid {
+            keyspace: vitess_keyspace.clone(),
+            shard: "".to_string(),
+            gtid: "current".to_string(),
+            ..Default::default()
+        }],
     };
 
     // Make the VStream API request to start streaming changes from the cluster
-    let request = VStreamRequest { vgtid: Some(initial_position), ..Default::default() };
-    let vstream = client.v_stream(request).await.expect("Failed to start VStream");
+    let request = VStreamRequest {
+        vgtid: Some(initial_position),
+        ..Default::default()
+    };
+    let vstream = client
+        .v_stream(request)
+        .await
+        .expect("Failed to start VStream");
     let mut response_stream = vstream.into_inner();
 
     //-------------------------------------------------------------------------
