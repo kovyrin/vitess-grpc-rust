@@ -52,34 +52,47 @@ jobs:
       - name: cargo test --doc
         run: cargo test --locked --all-features --doc
 
-  # minimal:
-  #   # This action chooses the oldest version of the dependencies to ensure that this crate is
-  #   # compatible with the minimal version that this crate and its dependencies require.
-  #   # This will pickup issues where this create relies on functionality that was introduced
-  #   # later than the actual version specified (e.g. when we choose just a major version, but a
-  #   # method was added after this version).
-  #   #
-  #   # This particular check can be difficult to get to succeed as often transitive dependencies
-  #   # may be incorrectly specified (e.g. a dependency specifies 1.0 but really requires 1.1.5).
-  #   # There is an alternative flag available -Zminimal-direct that uses the minimal versions for
-  #   # direct dependencies of this crate, while selecting the maximal versions for the transitive
-  #   # dependencies
-  #   runs-on: ubuntu-latest
-  #   name: ubuntu / stable / minimal-versions
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         submodules: true
-  #     - name: Install stable
-  #       uses: dtolnay/rust-toolchain@stable
-  #     - name: Install nightly for -Zminimal-versions
-  #       uses: dtolnay/rust-toolchain@nightly
-  #     - name: rustup default stable
-  #       run: rustup default stable
-  #     - name: cargo update -Zminimal-versions
-  #       run: cargo +nightly update -Zminimal-versions
-  #     - name: cargo test
-  #       run: cargo test --locked --all-features --all-targets
+  minimal:
+    # This action chooses the oldest version of the dependencies to ensure that this crate is
+    # compatible with the minimal version that this crate and its dependencies require.
+    # This will pickup issues where this create relies on functionality that was introduced
+    # later than the actual version specified (e.g. when we choose just a major version, but a
+    # method was added after this version).
+    #
+    # This particular check can be difficult to get to succeed as often transitive dependencies
+    # may be incorrectly specified (e.g. a dependency specifies 1.0 but really requires 1.1.5).
+    # There is an alternative flag available -Zminimal-direct that uses the minimal versions for
+    # direct dependencies of this crate, while selecting the maximal versions for the transitive
+    # dependencies
+    runs-on: ubuntu-latest
+    name: ubuntu / stable / minimal-versions
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install nightly for -Zminimal-versions
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v2
+
+      - uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: ".github/docker-compose.yml"
+
+      - name: rustup default stable
+        run: rustup default stable
+
+      - name: cargo update -Zminimal-versions
+        run: cargo +nightly update -Zminimal-versions
+
+      - name: cargo test
+        run: cargo test --locked --all-features --all-targets
+
   # os-check:
   #   # run cargo test on mac and windows
   #   runs-on: ${{ matrix.os }}
@@ -99,35 +112,40 @@ jobs:
   #       run: cargo generate-lockfile
   #     - name: cargo test
   #       run: cargo test --locked --all-features --all-targets
-  # coverage:
-  #   # use llvm-cov to build and collect coverage and outputs in a format that is compatible with
-  #   # codecov.io
-  #   runs-on: ubuntu-latest
-  #   name: ubuntu / stable / coverage
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         submodules: true
 
-  #     - name: Install stable
-  #       uses: dtolnay/rust-toolchain@stable
-  #       with:
-  #         components: llvm-tools-preview
+  coverage:
+    # use llvm-cov to build and collect coverage and outputs in a format that is compatible with
+    # codecov.io
+    runs-on: ubuntu-latest
+    name: ubuntu / stable / coverage
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
 
-  #     - name: Install Protoc
-  #       uses: arduino/setup-protoc@v2
+      - name: Install stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
 
-  #     - name: cargo install cargo-llvm-cov
-  #       uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v2
 
-  #     - name: cargo generate-lockfile
-  #       if: hashFiles('Cargo.lock') == ''
-  #       run: cargo generate-lockfile
+      - uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: ".github/docker-compose.yml"
 
-  #     - name: cargo llvm-cov
-  #       run: cargo llvm-cov --locked --all-features --lcov --output-path lcov.info
+      - name: cargo install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
 
-  #     - name: Upload to codecov.io
-  #       uses: codecov/codecov-action@v3
-  #       with:
-  #         fail_ci_if_error: true
+      - name: cargo generate-lockfile
+        if: hashFiles('Cargo.lock') == ''
+        run: cargo generate-lockfile
+
+      - name: cargo llvm-cov
+        run: cargo llvm-cov --locked --all-features --lcov --output-path lcov.info
+
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: true
