@@ -15,6 +15,9 @@ keywords = ["vitess", "grpc", "client", "database", "mysql"]
 tonic = "0.9"
 prost = "0.11"
 
+# Transitive dependencies detected by -zminimal-versions
+libc = "0.2"
+
 [dev-dependencies]
 tokio = { version = "1.5", features = ["full"] }
 anyhow = "1.0"
