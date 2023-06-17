@@ -93,13 +93,13 @@ async fn vstream_integration() {
     let _ = conn.query_drop("INSERT INTO fruit SET id=1, name='banana'");
 
     // The VStream should send us a set of messages describing the transaction
-    let response = response_stream.message().await.unwrap().unwrap();
+    let mut response = response_stream.message().await.unwrap().unwrap();
     dbg!(&response);
 
     // Sometimes Vitess sends empty transactions after a schema change, skip those
     while empty_transaction(&response) {
         println!("Empty transaction after schema change, skipping");
-        let response = response_stream.message().await.unwrap().unwrap();
+        response = response_stream.message().await.unwrap().unwrap();
         dbg!(&response);
     }
 
