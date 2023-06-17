@@ -2,6 +2,8 @@
 
 [![Crates.io](https://img.shields.io/crates/v/vitess-grpc)](https://crates.io/crates/vitess-grpc)
 [![Docs.rs](https://docs.rs/vitess-grpc/badge.svg)](https://docs.rs/vitess-grpc)
+[![Tests](https://github.com/kovyrin/vitess-grpc-rust/actions/workflows/test.yml/badge.svg)](https://github.com/kovyrin/vitess-grpc-rust/actions/workflows/test.yml)
+[![Checks](https://github.com/kovyrin/vitess-grpc-rust/actions/workflows/check.yml/badge.svg)](https://github.com/kovyrin/vitess-grpc-rust/actions/workflows/check.yml)
 
 This is a Rust gRPC client for Vitess. It is generated from the Vitess proto files using
 [tonic](https://github.com/hyperium/tonic).
