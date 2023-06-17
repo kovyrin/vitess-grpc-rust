@@ -20,7 +20,7 @@ tokio = { version = "1.0", features = ["full"] }
 
 ## Example
 
-You can find an example of how to use this crate in the [examples](vitess-grpc/examples) directory.
+You can find an example of how to use this crate in the [examples](examples) directory.
 
 Examples can be run with:
 
