@@ -1,5 +1,5 @@
 use vitess_grpc::binlogdata::{ShardGtid, VEventType, VGtid};
-use vitess_grpc::vtgate::VStreamRequest;
+use vitess_grpc::vtgate::{VStreamRequest, VStreamResponse};
 use vitess_grpc::vtgateservice::vitess_client::VitessClient;
 
 use mysql::prelude::*;
@@ -96,8 +96,8 @@ async fn vstream_integration() {
     let response = response_stream.message().await.unwrap().unwrap();
     dbg!(&response);
 
-    // Sometimes Vitess sends an empty transaction after a schema change, skip it if needed
-    if response.events.len() == 3 {
+    // Sometimes Vitess sends empty transactions after a schema change, skip those
+    while empty_transaction(&response) {
         println!("Empty transaction after schema change, skipping");
         let response = response_stream.message().await.unwrap().unwrap();
         dbg!(&response);
@@ -181,4 +181,11 @@ async fn vstream_integration() {
     let ddl = &response.events[1];
     assert_eq!(ddl.r#type, VEventType::Ddl as i32);
     assert!(ddl.statement.starts_with("DROP TABLE"));
+}
+
+fn empty_transaction(response: &VStreamResponse) -> bool {
+    response.events.len() == 3
+        && response.events[0].r#type == VEventType::Begin as i32
+        && response.events[1].r#type == VEventType::Vgtid as i32
+        && response.events[2].r#type == VEventType::Commit as i32
 }
