@@ -2,7 +2,7 @@ version: "3"
 
 services:
   vttestserver:
-    image: docker.io/kovyrin/vttestserver-arm64v8:mysql-8.0.31-vitess-v16.0.2
+    image: vitess/vttestserver:mysql80
     environment:
       PORT: 15300
       KEYSPACES: "commerce,sharded"
