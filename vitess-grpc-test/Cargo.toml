@@ -18,5 +18,5 @@ mysql = "24.0"
 # For min-versions testing
 openssl-sys = "0.9.88"
 libz-sys = "1.1.9"
-proc-macro-hack = "0.5.20+deprecated"
+proc-macro-hack = "0.5.20"
 libc = "0.2"
