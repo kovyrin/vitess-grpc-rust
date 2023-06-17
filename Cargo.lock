@@ -2291,6 +2291,7 @@ dependencies = [
  "libz-sys",
  "mysql",
  "openssl-sys",
+ "proc-macro-hack",
  "prost",
  "tokio",
  "tonic",
