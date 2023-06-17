@@ -2277,7 +2277,6 @@ name = "vitess-grpc"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "libc",
  "prost",
  "tokio",
  "tonic",
