@@ -51,6 +51,7 @@ jobs:
       # https://github.com/rust-lang/cargo/issues/6669
       - name: cargo test --doc
         run: cargo test --locked --all-features --doc
+        working-directory: vitess-grpc
 
   # minimal:
   #   # This action chooses the oldest version of the dependencies to ensure that this crate is
