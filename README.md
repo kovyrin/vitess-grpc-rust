@@ -34,6 +34,10 @@ Available examples are:
 
 Before running the examples, you will need to start Vitess locally. An easy way to do this is to use the `scripts/start-vttestserver` script, which will start a local Vitess cluster in Docker (or Podman) and configure a simple schema inside you can use for testing.
 
+## Versioning
+
+The version of the crate is independent of the version of Vitess, but contains a build metadata portion (see [SemVer documentation](https://semver.org/#spec-item-10) for details) that is set to the Vitess version the crate was generated from. For example, the version `0.1.0+vitess16.0.2` means that the crate was generated from the proto files included in Vitess v16.0.2.
+
 ## License
 
 The files in the `proto` directory are copied from the [Vitess repository](https://github.com/vitessio/vitess/tree/main/proto) and are licensed under the Apache License, Version 2.0. See the
