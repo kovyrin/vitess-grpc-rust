@@ -90,6 +90,9 @@ pub struct Session {
     pub enable_system_settings: bool,
     #[prost(map = "string, int64", tag = "24")]
     pub advisory_lock: ::std::collections::HashMap<::prost::alloc::string::String, i64>,
+    /// query_timeout is the maximum amount of time a query is permitted to run
+    #[prost(int64, tag = "25")]
+    pub query_timeout: i64,
 }
 /// Nested message and enum types in `Session`.
 pub mod session {
