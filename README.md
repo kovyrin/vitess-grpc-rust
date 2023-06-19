@@ -20,7 +20,7 @@ tokio = { version = "1.0", features = ["full"] }
 
 ## Example
 
-You can find an example of how to use this crate in the [examples](examples) directory.
+You can find an example of how to use this crate in the [examples](vitess-grpc/examples) directory.
 
 Examples can be run with:
 
@@ -29,7 +29,7 @@ cargo run --example <example_name>
 ```
 
 Available examples are:
-* [vstream-consumer](examples/vstream.rs): A simple vstream consumer, which prints the events it receives.
+* [vstream-consumer](vitess-grpc/examples/vstream.rs): A simple vstream consumer, which prints the events it receives.
 
 
 Before running the examples, you will need to start Vitess locally. An easy way to do this is to use the `scripts/start-vttestserver` script, which will start a local Vitess cluster in Docker (or Podman) and configure a simple schema inside you can use for testing.
