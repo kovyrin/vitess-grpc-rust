@@ -91,6 +91,9 @@ pub struct Table {
     /// us to expand 'select *' expressions.
     #[prost(bool, tag = "6")]
     pub column_list_authoritative: bool,
+    /// reference tables may optionally indicate their source table.
+    #[prost(string, tag = "7")]
+    pub source: ::prost::alloc::string::String,
 }
 /// ColumnVindex is used to associate a column to a vindex.
 #[allow(clippy::derive_partial_eq_without_eq)]

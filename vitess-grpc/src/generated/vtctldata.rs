@@ -67,6 +67,12 @@ pub struct MaterializeSettings {
     pub target_time_zone: ::prost::alloc::string::String,
     #[prost(string, repeated, tag = "12")]
     pub source_shards: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// OnDdl specifies the action to be taken when a DDL is encountered.
+    #[prost(string, tag = "13")]
+    pub on_ddl: ::prost::alloc::string::String,
+    /// DeferSecondaryKeys specifies if secondary keys should be created in one shot after table copy finishes.
+    #[prost(bool, tag = "14")]
+    pub defer_secondary_keys: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -103,6 +109,10 @@ pub struct Workflow {
         ::prost::alloc::string::String,
         workflow::ShardStream,
     >,
+    #[prost(string, tag = "6")]
+    pub workflow_type: ::prost::alloc::string::String,
+    #[prost(string, tag = "7")]
+    pub workflow_sub_type: ::prost::alloc::string::String,
 }
 /// Nested message and enum types in `Workflow`.
 pub mod workflow {
@@ -339,6 +349,10 @@ pub struct BackupRequest {
     /// simultaneously.
     #[prost(uint64, tag = "3")]
     pub concurrency: u64,
+    /// IncrementalFromPos indicates a position of a previous backup. When this value is non-empty
+    /// then the backup becomes incremental and applies as of given position.
+    #[prost(string, tag = "4")]
+    pub incremental_from_pos: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -902,6 +916,36 @@ pub struct GetSrvKeyspacesResponse {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateThrottlerConfigRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    /// Enable instructs to enable the throttler
+    #[prost(bool, tag = "2")]
+    pub enable: bool,
+    /// Disable instructs to disable the throttler
+    #[prost(bool, tag = "3")]
+    pub disable: bool,
+    /// Threshold for throttler (with no custom query, ie using default query, only positive values are considered)
+    #[prost(double, tag = "4")]
+    pub threshold: f64,
+    /// CustomQuery replaces the default replication lag query
+    #[prost(string, tag = "5")]
+    pub custom_query: ::prost::alloc::string::String,
+    /// CustomQuerySet indicates that the value of CustomQuery has changed
+    #[prost(bool, tag = "6")]
+    pub custom_query_set: bool,
+    /// CheckAsCheckSelf instructs the throttler to respond to /check requests by checking the tablet's own health
+    #[prost(bool, tag = "7")]
+    pub check_as_check_self: bool,
+    /// CheckAsCheckShard instructs the throttler to respond to /check requests by checking the shard's health (this is the default behavior)
+    #[prost(bool, tag = "8")]
+    pub check_as_check_shard: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateThrottlerConfigResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetSrvVSchemaRequest {
     #[prost(string, tag = "1")]
     pub cell: ::prost::alloc::string::String,
@@ -1314,6 +1358,14 @@ pub struct RestoreFromBackupRequest {
     /// this time. If nil, the latest backup will be restored on the tablet.
     #[prost(message, optional, tag = "2")]
     pub backup_time: ::core::option::Option<super::vttime::Time>,
+    /// RestoreToPos indicates a position for a point-in-time recovery. The recovery
+    /// is expected to utilize one full backup, followed by zero or more incremental backups,
+    /// that reach the precise desired position
+    #[prost(string, tag = "3")]
+    pub restore_to_pos: ::prost::alloc::string::String,
+    /// Dry run does not actually performs the restore, but validates the steps and availability of backups
+    #[prost(bool, tag = "4")]
+    pub dry_run: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

@@ -803,5 +803,33 @@ pub mod query_client {
                 .insert(GrpcMethod::new("queryservice.Query", "VStreamResults"));
             self.inner.server_streaming(req, path, codec).await
         }
+        /// GetSchema returns the schema information.
+        pub async fn get_schema(
+            &mut self,
+            request: impl tonic::IntoRequest<super::super::query::GetSchemaRequest>,
+        ) -> std::result::Result<
+            tonic::Response<
+                tonic::codec::Streaming<super::super::query::GetSchemaResponse>,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/queryservice.Query/GetSchema",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("queryservice.Query", "GetSchema"));
+            self.inner.server_streaming(req, path, codec).await
+        }
     }
 }

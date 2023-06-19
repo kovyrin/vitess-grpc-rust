@@ -204,6 +204,11 @@ pub struct Keyspace {
     /// used for the keyspace.
     #[prost(string, tag = "8")]
     pub durability_policy: ::prost::alloc::string::String,
+    /// ThrottlerConfig has the configuration for the tablet
+    /// server's lag throttler, and applies to the entire
+    /// keyspace, across all shards and tablets.
+    #[prost(message, optional, tag = "9")]
+    pub throttler_config: ::core::option::Option<ThrottlerConfig>,
 }
 /// Nested message and enum types in `Keyspace`.
 pub mod keyspace {
@@ -327,6 +332,27 @@ pub struct ShardTabletControl {
     #[prost(bool, tag = "3")]
     pub query_service_disabled: bool,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ThrottlerConfig {
+    /// Enabled indicates that the throttler is actually checking state for
+    /// requests. When disabled, it automatically returns 200 OK for all
+    /// checks.
+    #[prost(bool, tag = "1")]
+    pub enabled: bool,
+    /// Threshold is the threshold for either the default check (heartbeat
+    /// lag) or custom check.
+    #[prost(double, tag = "2")]
+    pub threshold: f64,
+    /// CustomQuery is an optional query that overrides the default check
+    /// query.
+    #[prost(string, tag = "3")]
+    pub custom_query: ::prost::alloc::string::String,
+    /// CheckAsCheckSelf indicates whether a throttler /check request
+    /// should behave like a /check-self.
+    #[prost(bool, tag = "4")]
+    pub check_as_check_self: bool,
+}
 /// SrvKeyspace is a rollup node for the keyspace itself.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -336,6 +362,12 @@ pub struct SrvKeyspace {
     pub partitions: ::prost::alloc::vec::Vec<srv_keyspace::KeyspacePartition>,
     #[prost(message, repeated, tag = "4")]
     pub served_from: ::prost::alloc::vec::Vec<srv_keyspace::ServedFrom>,
+    /// ThrottlerConfig has the configuration for the tablet server's
+    /// lag throttler, and applies to the entire keyspace, across all
+    /// shards and tablets. This is copied from the global keyspace
+    /// object.
+    #[prost(message, optional, tag = "6")]
+    pub throttler_config: ::core::option::Option<ThrottlerConfig>,
 }
 /// Nested message and enum types in `SrvKeyspace`.
 pub mod srv_keyspace {

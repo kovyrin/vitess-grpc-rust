@@ -127,6 +127,16 @@ pub struct ExecuteOptions {
     /// The current session can still use other sessions cached plans.
     #[prost(bool, tag = "12")]
     pub has_created_temp_tables: bool,
+    #[prost(enumeration = "execute_options::Consolidator", tag = "13")]
+    pub consolidator: i32,
+    /// TransactionAccessMode specifies the access modes to be used while starting the transaction i.e. READ WRITE/READ ONLY/WITH CONSISTENT SNAPSHOT
+    /// If not specified, the transaction will be started with the default access mode on the connection.
+    #[prost(
+        enumeration = "execute_options::TransactionAccessMode",
+        repeated,
+        tag = "14"
+    )]
+    pub transaction_access_mode: ::prost::alloc::vec::Vec<i32>,
 }
 /// Nested message and enum types in `ExecuteOptions`.
 pub mod execute_options {
@@ -315,6 +325,87 @@ pub mod execute_options {
                 "Gen4Left2Right" => Some(Self::Gen4Left2Right),
                 "Gen4WithFallback" => Some(Self::Gen4WithFallback),
                 "Gen4CompareV3" => Some(Self::Gen4CompareV3),
+                _ => None,
+            }
+        }
+    }
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum Consolidator {
+        Unspecified = 0,
+        Disabled = 1,
+        Enabled = 2,
+        EnabledReplicas = 3,
+    }
+    impl Consolidator {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                Consolidator::Unspecified => "CONSOLIDATOR_UNSPECIFIED",
+                Consolidator::Disabled => "CONSOLIDATOR_DISABLED",
+                Consolidator::Enabled => "CONSOLIDATOR_ENABLED",
+                Consolidator::EnabledReplicas => "CONSOLIDATOR_ENABLED_REPLICAS",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "CONSOLIDATOR_UNSPECIFIED" => Some(Self::Unspecified),
+                "CONSOLIDATOR_DISABLED" => Some(Self::Disabled),
+                "CONSOLIDATOR_ENABLED" => Some(Self::Enabled),
+                "CONSOLIDATOR_ENABLED_REPLICAS" => Some(Self::EnabledReplicas),
+                _ => None,
+            }
+        }
+    }
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum TransactionAccessMode {
+        ConsistentSnapshot = 0,
+        ReadWrite = 1,
+        ReadOnly = 2,
+    }
+    impl TransactionAccessMode {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                TransactionAccessMode::ConsistentSnapshot => "CONSISTENT_SNAPSHOT",
+                TransactionAccessMode::ReadWrite => "READ_WRITE",
+                TransactionAccessMode::ReadOnly => "READ_ONLY",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "CONSISTENT_SNAPSHOT" => Some(Self::ConsistentSnapshot),
+                "READ_WRITE" => Some(Self::ReadWrite),
+                "READ_ONLY" => Some(Self::ReadOnly),
                 _ => None,
             }
         }
@@ -1104,6 +1195,9 @@ pub struct RealtimeStats {
     /// table_schema_changed is to provide list of tables that have schema changes detected by the tablet.
     #[prost(string, repeated, tag = "7")]
     pub table_schema_changed: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// view_schema_changed is to provide list of views that have schema changes detected by the tablet.
+    #[prost(string, repeated, tag = "8")]
+    pub view_schema_changed: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 /// AggregateStats contains information about the health of a group of
 /// tablets for a Target.  It is used to propagate stats from a vtgate
@@ -1197,6 +1291,28 @@ pub struct TransactionMetadata {
     pub time_created: i64,
     #[prost(message, repeated, tag = "4")]
     pub participants: ::prost::alloc::vec::Vec<Target>,
+}
+/// GetSchemaRequest is the payload to GetSchema
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetSchemaRequest {
+    #[prost(message, optional, tag = "1")]
+    pub target: ::core::option::Option<Target>,
+    #[prost(enumeration = "SchemaTableType", tag = "2")]
+    pub table_type: i32,
+    #[prost(string, repeated, tag = "3")]
+    pub table_names: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// GetSchemaResponse is the returned value from GetSchema
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetSchemaResponse {
+    /// this is for the schema definition for the requested tables.
+    #[prost(map = "string, string", tag = "2")]
+    pub table_definition: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        ::prost::alloc::string::String,
+    >,
 }
 /// Flags sent from the MySQL C API
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -1546,6 +1662,36 @@ impl TransactionState {
             "PREPARE" => Some(Self::Prepare),
             "COMMIT" => Some(Self::Commit),
             "ROLLBACK" => Some(Self::Rollback),
+            _ => None,
+        }
+    }
+}
+/// SchemaTableType represents the type of table requested.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum SchemaTableType {
+    Views = 0,
+    Tables = 1,
+    All = 2,
+}
+impl SchemaTableType {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            SchemaTableType::Views => "VIEWS",
+            SchemaTableType::Tables => "TABLES",
+            SchemaTableType::All => "ALL",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "VIEWS" => Some(Self::Views),
+            "TABLES" => Some(Self::Tables),
+            "ALL" => Some(Self::All),
             _ => None,
         }
     }

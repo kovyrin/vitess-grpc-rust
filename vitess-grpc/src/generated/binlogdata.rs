@@ -216,6 +216,14 @@ pub struct Rule {
     /// key on source tables (some columns may be renamed from source to target)
     #[prost(string, tag = "7")]
     pub source_unique_key_target_columns: ::prost::alloc::string::String,
+    /// ConvertIntToEnum lists any columns that are converted from an integral value into an enum.
+    /// such columns need to have special transofrmation of the data, from an integral format into a
+    /// string format. e.g. the value 0 needs to be converted to '0'.
+    #[prost(map = "string, bool", tag = "8")]
+    pub convert_int_to_enum: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        bool,
+    >,
 }
 /// Filter represents a list of ordered rules. The first
 /// match wins.
@@ -740,6 +748,10 @@ pub enum VEventType {
     Version = 17,
     Lastpk = 18,
     Savepoint = 19,
+    /// COPY_COMPLETED is sent when VTGate's VStream copy operation is done.
+    /// If a client experiences some disruptions before receiving the event,
+    /// the client should restart the copy operation.
+    CopyCompleted = 20,
 }
 impl VEventType {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -768,6 +780,7 @@ impl VEventType {
             VEventType::Version => "VERSION",
             VEventType::Lastpk => "LASTPK",
             VEventType::Savepoint => "SAVEPOINT",
+            VEventType::CopyCompleted => "COPY_COMPLETED",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -793,6 +806,7 @@ impl VEventType {
             "VERSION" => Some(Self::Version),
             "LASTPK" => Some(Self::Lastpk),
             "SAVEPOINT" => Some(Self::Savepoint),
+            "COPY_COMPLETED" => Some(Self::CopyCompleted),
             _ => None,
         }
     }

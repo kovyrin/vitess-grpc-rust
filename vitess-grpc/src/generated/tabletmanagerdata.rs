@@ -590,6 +590,10 @@ pub struct BackupRequest {
     pub concurrency: i64,
     #[prost(bool, tag = "2")]
     pub allow_primary: bool,
+    /// IncrementalFromPos indicates a position of a previous backup. When this value is non-empty
+    /// then the backup becomes incremental and applies as of given position.
+    #[prost(string, tag = "3")]
+    pub incremental_from_pos: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -602,6 +606,14 @@ pub struct BackupResponse {
 pub struct RestoreFromBackupRequest {
     #[prost(message, optional, tag = "1")]
     pub backup_time: ::core::option::Option<super::vttime::Time>,
+    /// RestoreToPos indicates a position for a point-in-time recovery. The recovery
+    /// is expected to utilize one full backup, followed by zero or more incremental backups,
+    /// that reach the precise desired position
+    #[prost(string, tag = "2")]
+    pub restore_to_pos: ::prost::alloc::string::String,
+    /// Dry run does not actually performs the restore, but validates the steps and availability of backups
+    #[prost(bool, tag = "3")]
+    pub dry_run: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -667,7 +679,7 @@ pub struct VDiffPickerOptions {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VDiffReportOptions {
     #[prost(bool, tag = "1")]
-    pub only_p_k_s: bool,
+    pub only_pks: bool,
     #[prost(bool, tag = "2")]
     pub debug_query: bool,
     #[prost(string, tag = "3")]
