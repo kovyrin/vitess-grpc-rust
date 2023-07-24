@@ -35,7 +35,7 @@ jobs:
       - name: Install Protoc
         uses: arduino/setup-protoc@v2
 
-      - uses: isbang/compose-action@v1.4.1
+      - uses: isbang/compose-action@v1.5.0
         with:
           compose-file: ".github/docker-compose.yml"
 
@@ -80,7 +80,7 @@ jobs:
   #     - name: Install Protoc
   #       uses: arduino/setup-protoc@v2
 
-  #     - uses: isbang/compose-action@v1.4.1
+  #     - uses: isbang/compose-action@v1.5.0
   #       with:
   #         compose-file: ".github/docker-compose.yml"
 
@@ -131,7 +131,7 @@ jobs:
       - name: Install Protoc
         uses: arduino/setup-protoc@v2
 
-      - uses: isbang/compose-action@v1.4.1
+      - uses: isbang/compose-action@v1.5.0
         with:
           compose-file: ".github/docker-compose.yml"
 
