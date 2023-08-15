@@ -2641,5 +2641,34 @@ pub mod vtctld_client {
                 .insert(GrpcMethod::new("vtctlservice.Vtctld", "ValidateVSchema"));
             self.inner.unary(req, path, codec).await
         }
+        /// WorkflowUpdate updates the configuration of a vreplication workflow
+        /// using the provided updated parameters.
+        pub async fn workflow_update(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::WorkflowUpdateRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::WorkflowUpdateResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/WorkflowUpdate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "WorkflowUpdate"));
+            self.inner.unary(req, path, codec).await
+        }
     }
 }

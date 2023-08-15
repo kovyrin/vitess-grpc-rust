@@ -434,6 +434,10 @@ pub struct CreateKeyspaceRequest {
     /// used for this keyspace.
     #[prost(string, tag = "10")]
     pub durability_policy: ::prost::alloc::string::String,
+    /// SidecarDBName is the name of the sidecar database that
+    /// each vttablet in the keyspace will use.
+    #[prost(string, tag = "11")]
+    pub sidecar_db_name: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1079,6 +1083,8 @@ pub struct GetWorkflowsRequest {
     pub keyspace: ::prost::alloc::string::String,
     #[prost(bool, tag = "2")]
     pub active_only: bool,
+    #[prost(bool, tag = "3")]
+    pub name_only: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1596,8 +1602,8 @@ pub struct SourceShardAddRequest {
     pub keyspace: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub shard: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    pub uid: u32,
+    #[prost(int32, tag = "3")]
+    pub uid: i32,
     #[prost(string, tag = "4")]
     pub source_keyspace: ::prost::alloc::string::String,
     #[prost(string, tag = "5")]
@@ -1625,8 +1631,8 @@ pub struct SourceShardDeleteRequest {
     pub keyspace: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub shard: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "3")]
-    pub uid: u32,
+    #[prost(int32, tag = "3")]
+    pub uid: i32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1835,6 +1841,40 @@ pub struct ValidateVSchemaResponse {
         ::prost::alloc::string::String,
         ValidateShardResponse,
     >,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WorkflowUpdateRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    /// TabletRequest gets passed on to each primary tablet involved
+    /// in the workflow via the UpdateVRWorkflow tabletmanager RPC.
+    #[prost(message, optional, tag = "2")]
+    pub tablet_request: ::core::option::Option<
+        super::tabletmanagerdata::UpdateVrWorkflowRequest,
+    >,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WorkflowUpdateResponse {
+    #[prost(string, tag = "1")]
+    pub summary: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "2")]
+    pub details: ::prost::alloc::vec::Vec<workflow_update_response::TabletInfo>,
+}
+/// Nested message and enum types in `WorkflowUpdateResponse`.
+pub mod workflow_update_response {
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct TabletInfo {
+        #[prost(string, tag = "1")]
+        pub tablet: ::prost::alloc::string::String,
+        /// Changed is true if any of the provided values were different
+        /// than what was already stored. The value is based on the query
+        /// result's RowsAffected being 0 or not.
+        #[prost(bool, tag = "2")]
+        pub changed: bool,
+    }
 }
 /// MaterializationIntent describes the reason for creating the Materialize flow
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]

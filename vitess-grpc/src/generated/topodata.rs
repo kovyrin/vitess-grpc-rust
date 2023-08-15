@@ -80,9 +80,6 @@ pub struct Tablet {
     ///
     #[prost(message, optional, tag = "14")]
     pub primary_term_start_time: ::core::option::Option<super::vttime::Time>,
-    /// db_server_version represents the database version used by the tablet.
-    #[prost(string, tag = "15")]
-    pub db_server_version: ::prost::alloc::string::String,
     /// default_conn_collation is the default connection collation used by this tablet.
     #[prost(uint32, tag = "16")]
     pub default_conn_collation: u32,
@@ -145,8 +142,8 @@ pub mod shard {
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct SourceShard {
         /// Uid is the unique ID for this SourceShard object.
-        #[prost(uint32, tag = "1")]
-        pub uid: u32,
+        #[prost(int32, tag = "1")]
+        pub uid: i32,
         /// the source keyspace
         #[prost(string, tag = "2")]
         pub keyspace: ::prost::alloc::string::String,
@@ -209,6 +206,11 @@ pub struct Keyspace {
     /// keyspace, across all shards and tablets.
     #[prost(message, optional, tag = "9")]
     pub throttler_config: ::core::option::Option<ThrottlerConfig>,
+    /// SidecarDBName is the name of the Vitess sidecar database
+    /// used for various system metadata that is stored in each
+    /// tablet's mysqld instance.
+    #[prost(string, tag = "10")]
+    pub sidecar_db_name: ::prost::alloc::string::String,
 }
 /// Nested message and enum types in `Keyspace`.
 pub mod keyspace {

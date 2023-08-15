@@ -36,7 +36,7 @@ Before running the examples, you will need to start Vitess locally. An easy way 
 
 ## Versioning
 
-The version of the crate is independent of the version of Vitess, but contains a build metadata portion (see [SemVer documentation](https://semver.org/#spec-item-10) for details) that is set to the Vitess version the crate was generated from. For example, the version `0.1.0+vitess16.0.2` means that the crate was generated from the proto files included in Vitess v16.0.2.
+The version of the crate is independent of the version of Vitess, but contains a build metadata portion (see [SemVer documentation](https://semver.org/#spec-item-10) for details) that is set to the Vitess version the crate was generated from. For example, the version `0.1.3+vitess17.0.1` means that the crate was generated from the proto files included in Vitess v17.0.1.
 
 ## License
 

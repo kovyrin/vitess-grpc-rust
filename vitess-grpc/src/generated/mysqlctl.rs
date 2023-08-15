@@ -24,6 +24,17 @@ pub struct RunMysqlUpgradeRequest {}
 pub struct RunMysqlUpgradeResponse {}
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ApplyBinlogFileRequest {
+    #[prost(string, tag = "1")]
+    pub binlog_file_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub binlog_restore_position: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ApplyBinlogFileResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ReinitConfigRequest {}
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -263,6 +274,31 @@ pub mod mysql_ctl_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("mysqlctl.MysqlCtl", "RunMysqlUpgrade"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn apply_binlog_file(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ApplyBinlogFileRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ApplyBinlogFileResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/mysqlctl.MysqlCtl/ApplyBinlogFile",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("mysqlctl.MysqlCtl", "ApplyBinlogFile"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn reinit_config(
