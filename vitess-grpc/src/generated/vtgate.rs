@@ -93,6 +93,11 @@ pub struct Session {
     /// query_timeout is the maximum amount of time a query is permitted to run
     #[prost(int64, tag = "25")]
     pub query_timeout: i64,
+    #[prost(map = "string, message", tag = "26")]
+    pub prepare_statement: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        PrepareData,
+    >,
 }
 /// Nested message and enum types in `Session`.
 pub mod session {
@@ -111,6 +116,15 @@ pub mod session {
         #[prost(bool, tag = "5")]
         pub vindex_only: bool,
     }
+}
+/// PrepareData keeps the prepared statement and other information related for execution of it.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PrepareData {
+    #[prost(string, tag = "1")]
+    pub prepare_statement: ::prost::alloc::string::String,
+    #[prost(int32, tag = "2")]
+    pub params_count: i32,
 }
 /// ReadAfterWrite contains information regarding gtid set and timeout
 /// Also if the gtid information needs to be passed to client.
@@ -212,6 +226,9 @@ pub struct StreamExecuteResponse {
     /// The next values contain the actual rows, a few values per result.
     #[prost(message, optional, tag = "1")]
     pub result: ::core::option::Option<super::query::QueryResult>,
+    /// session is the updated session information.
+    #[prost(message, optional, tag = "2")]
+    pub session: ::core::option::Option<Session>,
 }
 /// ResolveTransactionRequest is the payload to ResolveTransaction.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -245,6 +262,10 @@ pub struct VStreamFlags {
     /// defaults to the cell of the vtgate serving the VStream API.
     #[prost(string, tag = "4")]
     pub cells: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
+    pub cell_preference: ::prost::alloc::string::String,
+    #[prost(string, tag = "6")]
+    pub tablet_order: ::prost::alloc::string::String,
 }
 /// VStreamRequest is the payload for VStream.
 #[allow(clippy::derive_partial_eq_without_eq)]

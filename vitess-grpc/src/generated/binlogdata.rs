@@ -345,6 +345,20 @@ pub struct RowChange {
     pub before: ::core::option::Option<super::query::Row>,
     #[prost(message, optional, tag = "2")]
     pub after: ::core::option::Option<super::query::Row>,
+    /// DataColumns is a bitmap of all columns: bit is set if column is present in the after image
+    #[prost(message, optional, tag = "3")]
+    pub data_columns: ::core::option::Option<row_change::Bitmap>,
+}
+/// Nested message and enum types in `RowChange`.
+pub mod row_change {
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct Bitmap {
+        #[prost(int64, tag = "1")]
+        pub count: i64,
+        #[prost(bytes = "vec", tag = "2")]
+        pub cols: ::prost::alloc::vec::Vec<u8>,
+    }
 }
 /// RowEvent represent row events for one table.
 #[allow(clippy::derive_partial_eq_without_eq)]

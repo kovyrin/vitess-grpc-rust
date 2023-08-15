@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -e
+
+VITESS_REPO="https://github.com/vitessio/vitess.git"
+VITESS_DIR="/tmp/vitess-grpc-protos"
+
+SCRIPTS_DIR=$(dirname "$0")
+REPO_DIR=$(dirname "$SCRIPTS_DIR")
+
+# Get version from the Cargo.toml file (package version is x.y.x+vitess-X.Y.Z, where X.Y.Z is the Vitess release)
+VITESS_RELEASE=$(awk -F '[+"-]' '/^version/ { print "v" $4 }' "$REPO_DIR/vitess-grpc/Cargo.toml")
+
+echo "Removing old proto files..."
+rm -rf "$REPO_DIR/vitess-grpc/proto"
+
+echo "Fetching protos from Vitess release $VITESS_RELEASE..."
+
+# Shallow clone the Vitess repo using the release tag
+rm -rf "$VITESS_DIR"
+git clone --config advice.detachedHead=false --depth 1 --branch "$VITESS_RELEASE" "$VITESS_REPO" "$VITESS_DIR"
+
+echo "Copying proto files..."
+cp -rv "$VITESS_DIR/proto" "$REPO_DIR/vitess-grpc/proto"
+chmod -x "$REPO_DIR/vitess-grpc/proto"/*
+
+echo "Removing temporary directory..."
+rm -rf "$VITESS_DIR"
+
+echo "Done!"

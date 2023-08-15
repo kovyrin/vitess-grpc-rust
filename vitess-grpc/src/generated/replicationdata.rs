@@ -112,6 +112,8 @@ pub struct FullStatus {
     pub semi_sync_primary_timeout: u64,
     #[prost(uint32, tag = "20")]
     pub semi_sync_wait_for_replica_count: u32,
+    #[prost(bool, tag = "21")]
+    pub super_read_only: bool,
 }
 /// StopReplicationMode is used to provide controls over how replication is stopped.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]

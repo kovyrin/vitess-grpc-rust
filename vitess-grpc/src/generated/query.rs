@@ -137,6 +137,14 @@ pub struct ExecuteOptions {
         tag = "14"
     )]
     pub transaction_access_mode: ::prost::alloc::vec::Vec<i32>,
+    /// WorkloadName specifies the name of the workload as indicated in query directives. This is used for instrumentation
+    /// in metrics and tracing spans.
+    #[prost(string, tag = "15")]
+    pub workload_name: ::prost::alloc::string::String,
+    /// priority specifies the priority of the query, between 0 and 100. This is leveraged by the transaction
+    /// throttler to determine whether, under resource contention, a query should or should not be throttled.
+    #[prost(string, tag = "16")]
+    pub priority: ::prost::alloc::string::String,
 }
 /// Nested message and enum types in `ExecuteOptions`.
 pub mod execute_options {
@@ -298,6 +306,7 @@ pub mod execute_options {
         Gen4Left2Right = 4,
         Gen4WithFallback = 5,
         Gen4CompareV3 = 6,
+        V3Insert = 7,
     }
     impl PlannerVersion {
         /// String value of the enum field names used in the ProtoBuf definition.
@@ -313,6 +322,7 @@ pub mod execute_options {
                 PlannerVersion::Gen4Left2Right => "Gen4Left2Right",
                 PlannerVersion::Gen4WithFallback => "Gen4WithFallback",
                 PlannerVersion::Gen4CompareV3 => "Gen4CompareV3",
+                PlannerVersion::V3Insert => "V3Insert",
             }
         }
         /// Creates an enum from field names used in the ProtoBuf definition.
@@ -325,6 +335,7 @@ pub mod execute_options {
                 "Gen4Left2Right" => Some(Self::Gen4Left2Right),
                 "Gen4WithFallback" => Some(Self::Gen4WithFallback),
                 "Gen4CompareV3" => Some(Self::Gen4CompareV3),
+                "V3Insert" => Some(Self::V3Insert),
                 _ => None,
             }
         }

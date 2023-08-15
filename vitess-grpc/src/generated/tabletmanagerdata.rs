@@ -34,8 +34,6 @@ pub struct SchemaDefinition {
     pub database_schema: ::prost::alloc::string::String,
     #[prost(message, repeated, tag = "2")]
     pub table_definitions: ::prost::alloc::vec::Vec<TableDefinition>,
-    #[prost(string, tag = "3")]
-    pub version: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -441,8 +439,8 @@ pub struct VReplicationExecResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VReplicationWaitForPosRequest {
-    #[prost(int64, tag = "1")]
-    pub id: i64,
+    #[prost(int32, tag = "1")]
+    pub id: i32,
     #[prost(string, tag = "2")]
     pub position: ::prost::alloc::string::String,
 }
@@ -623,22 +621,6 @@ pub struct RestoreFromBackupResponse {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct VExecRequest {
-    #[prost(string, tag = "1")]
-    pub query: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub workflow: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub keyspace: ::prost::alloc::string::String,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct VExecResponse {
-    #[prost(message, optional, tag = "1")]
-    pub result: ::core::option::Option<super::query::QueryResult>,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VDiffRequest {
     #[prost(string, tag = "1")]
     pub keyspace: ::prost::alloc::string::String,
@@ -702,6 +684,8 @@ pub struct VDiffCoreOptions {
     pub timeout_seconds: i64,
     #[prost(int64, tag = "7")]
     pub max_extra_rows_to_compare: i64,
+    #[prost(bool, tag = "8")]
+    pub update_table_stats: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -712,4 +696,22 @@ pub struct VDiffOptions {
     pub core_options: ::core::option::Option<VDiffCoreOptions>,
     #[prost(message, optional, tag = "3")]
     pub report_options: ::core::option::Option<VDiffReportOptions>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateVrWorkflowRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "2")]
+    pub cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag = "3")]
+    pub tablet_types: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(enumeration = "super::binlogdata::OnDdlAction", tag = "4")]
+    pub on_ddl: i32,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateVrWorkflowResponse {
+    #[prost(message, optional, tag = "1")]
+    pub result: ::core::option::Option<super::query::QueryResult>,
 }

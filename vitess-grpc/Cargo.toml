@@ -1,6 +1,6 @@
 [package]
 name = "vitess-grpc"
-version = "0.1.2+vitess-16.0.2"
+version = "0.2.0+vitess-17.0.1"
 edition = "2021"
 authors = ["Oleksiy Kovyrin <oleksiy@kovyrin.net>"]
 description = "Vitess gRPC client library, auto-generated from the Vitess proto files using tonic-build."

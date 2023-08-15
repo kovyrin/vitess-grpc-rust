@@ -1024,6 +1024,38 @@ pub mod tablet_manager_client {
                 );
             self.inner.unary(req, path, codec).await
         }
+        pub async fn update_vr_workflow(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::tabletmanagerdata::UpdateVrWorkflowRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::tabletmanagerdata::UpdateVrWorkflowResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/tabletmanagerservice.TabletManager/UpdateVRWorkflow",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "tabletmanagerservice.TabletManager",
+                        "UpdateVRWorkflow",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
         /// VDiff API
         pub async fn v_diff(
             &mut self,
@@ -1549,34 +1581,6 @@ pub mod tablet_manager_client {
                     ),
                 );
             self.inner.server_streaming(req, path, codec).await
-        }
-        /// Generic VExec request. Can be used for various purposes
-        pub async fn v_exec(
-            &mut self,
-            request: impl tonic::IntoRequest<
-                super::super::tabletmanagerdata::VExecRequest,
-            >,
-        ) -> std::result::Result<
-            tonic::Response<super::super::tabletmanagerdata::VExecResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/tabletmanagerservice.TabletManager/VExec",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("tabletmanagerservice.TabletManager", "VExec"));
-            self.inner.unary(req, path, codec).await
         }
     }
 }

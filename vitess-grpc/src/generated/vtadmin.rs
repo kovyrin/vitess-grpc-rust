@@ -512,6 +512,39 @@ pub struct GetShardReplicationPositionsResponse {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetSrvKeyspaceRequest {
+    #[prost(string, tag = "1")]
+    pub cluster_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub keyspace: ::prost::alloc::string::String,
+    /// Cells is a list of cells to lookup a SrvKeyspace for. Leaving this empty is
+    /// equivalent to specifying all cells in the topo.
+    #[prost(string, repeated, tag = "3")]
+    pub cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetSrvKeyspacesRequest {
+    /// An optional list of cluster IDs to filter specific clusters
+    #[prost(string, repeated, tag = "1")]
+    pub cluster_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// Cells is a list of cells to lookup a SrvKeyspace for. Leaving this empty is
+    /// equivalent to specifying all cells in the topo.
+    #[prost(string, repeated, tag = "2")]
+    pub cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetSrvKeyspacesResponse {
+    /// GetSrvKeyspaces responses for each keyspace
+    #[prost(map = "string, message", tag = "1")]
+    pub srv_keyspaces: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        super::vtctldata::GetSrvKeyspacesResponse,
+    >,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetSrvVSchemaRequest {
     #[prost(string, tag = "1")]
     pub cluster_id: ::prost::alloc::string::String,
@@ -1641,6 +1674,58 @@ pub mod vt_admin_client {
                 .insert(
                     GrpcMethod::new("vtadmin.VTAdmin", "GetShardReplicationPositions"),
                 );
+            self.inner.unary(req, path, codec).await
+        }
+        /// GetSrvKeyspace returns the SrvKeyspace for a keyspace in one or more cells.
+        pub async fn get_srv_keyspace(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetSrvKeyspaceRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::GetSrvKeyspacesResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtadmin.VTAdmin/GetSrvKeyspace",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtadmin.VTAdmin", "GetSrvKeyspace"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// GetSrvKeyspaces returns the SrvKeyspaces for all keyspaces across all the specified clusters.
+        pub async fn get_srv_keyspaces(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetSrvKeyspacesRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::GetSrvKeyspacesResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtadmin.VTAdmin/GetSrvKeyspaces",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtadmin.VTAdmin", "GetSrvKeyspaces"));
             self.inner.unary(req, path, codec).await
         }
         /// GetSrvVSchema returns the SrvVSchema for the given cluster and cell.
