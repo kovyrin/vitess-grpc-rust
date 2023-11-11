@@ -14,7 +14,7 @@ To use this crate, add the following to your Cargo.toml:
 
 ```toml
 [dependencies]
-vitess-grpc = "0.1"
+vitess-grpc = "0.3"
 tokio = { version = "1.0", features = ["full"] }
 ```
 
@@ -36,7 +36,7 @@ Before running the examples, you will need to start Vitess locally. An easy way 
 
 ## Versioning
 
-The version of the crate is independent of the version of Vitess, but contains a build metadata portion (see [SemVer documentation](https://semver.org/#spec-item-10) for details) that is set to the Vitess version the crate was generated from. For example, the version `0.1.3+vitess17.0.1` means that the crate was generated from the proto files included in Vitess v17.0.1.
+The version of the crate is independent of the version of Vitess, but contains a build metadata portion (see [SemVer documentation](https://semver.org/#spec-item-10) for details) that is set to the Vitess version the crate was generated from. For example, the version `0.3.0+vitess18.0.0` means that the crate was generated from the proto files included in Vitess v18.0.0.
 
 ## License
 
