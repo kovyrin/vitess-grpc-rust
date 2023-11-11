@@ -56,5 +56,5 @@ When a new version of Vitess is released, the following steps should be taken to
 5. Run `cargo test` to make sure the tests pass.
 6. Stop the local Vitess cluster by running `scripts/stop-vttestserver`.
 7. Commit the changes and push them to GitHub.
-8. Create a new release on GitHub.
+8. Change directory to `vitess-grpc`
 9. Publish the crate to crates.io with `cargo publish`.
