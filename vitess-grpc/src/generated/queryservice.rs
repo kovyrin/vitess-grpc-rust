@@ -773,6 +773,36 @@ pub mod query_client {
                 .insert(GrpcMethod::new("queryservice.Query", "VStreamRows"));
             self.inner.server_streaming(req, path, codec).await
         }
+        /// VStreamTables streams rows from the specified starting point.
+        pub async fn v_stream_tables(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::binlogdata::VStreamTablesRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                tonic::codec::Streaming<super::super::binlogdata::VStreamTablesResponse>,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/queryservice.Query/VStreamTables",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("queryservice.Query", "VStreamTables"));
+            self.inner.server_streaming(req, path, codec).await
+        }
         /// VStreamResults streams results along with the gtid of the snapshot.
         pub async fn v_stream_results(
             &mut self,

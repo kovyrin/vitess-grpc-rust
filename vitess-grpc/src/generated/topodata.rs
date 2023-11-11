@@ -334,6 +334,24 @@ pub struct ShardTabletControl {
     #[prost(bool, tag = "3")]
     pub query_service_disabled: bool,
 }
+/// ThrottledAppRule defines an app-specific throttling rule, with expiration.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ThrottledAppRule {
+    /// Name of the app to be throttled, e.g. "vreplication" or "online-ddl"
+    #[prost(string, tag = "1")]
+    pub name: ::prost::alloc::string::String,
+    /// Ratio defines how much the app should be throttled, range \[0.0...1.0\]. 1.0 means fully throttled. 0.0 means not throttled at all.
+    /// Negative values are reserved for a future implementation.
+    #[prost(double, tag = "2")]
+    pub ratio: f64,
+    /// ExpiresAt is the time at which the rule expires.
+    #[prost(message, optional, tag = "3")]
+    pub expires_at: ::core::option::Option<super::vttime::Time>,
+    /// Exempt indicates the app should never be throttled, even if the throttler is, in general, throttling other apps.
+    #[prost(bool, tag = "4")]
+    pub exempt: bool,
+}
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ThrottlerConfig {
@@ -354,6 +372,12 @@ pub struct ThrottlerConfig {
     /// should behave like a /check-self.
     #[prost(bool, tag = "4")]
     pub check_as_check_self: bool,
+    /// ThrottledApps is a map of rules for app-specific throttling
+    #[prost(map = "string, message", tag = "5")]
+    pub throttled_apps: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        ThrottledAppRule,
+    >,
 }
 /// SrvKeyspace is a rollup node for the keyspace itself.
 #[allow(clippy::derive_partial_eq_without_eq)]

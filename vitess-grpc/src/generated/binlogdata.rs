@@ -372,6 +372,9 @@ pub struct RowEvent {
     pub keyspace: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
     pub shard: ::prost::alloc::string::String,
+    /// <https://dev.mysql.com/doc/dev/mysql-server/latest/classbinary__log_1_1Rows__event.html>
+    #[prost(uint32, tag = "5")]
+    pub flags: u32,
 }
 /// FieldEvent represents the field info for a table.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -587,6 +590,34 @@ pub struct VStreamRowsResponse {
     #[prost(bool, tag = "7")]
     pub heartbeat: bool,
 }
+/// VStreamTablesRequest is the payload for VStreamTables
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VStreamTablesRequest {
+    #[prost(message, optional, tag = "1")]
+    pub effective_caller_id: ::core::option::Option<super::vtrpc::CallerId>,
+    #[prost(message, optional, tag = "2")]
+    pub immediate_caller_id: ::core::option::Option<super::query::VtGateCallerId>,
+    #[prost(message, optional, tag = "3")]
+    pub target: ::core::option::Option<super::query::Target>,
+}
+/// VStreamTablesResponse is the response from VStreamTables
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VStreamTablesResponse {
+    #[prost(string, tag = "1")]
+    pub table_name: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "2")]
+    pub fields: ::prost::alloc::vec::Vec<super::query::Field>,
+    #[prost(message, repeated, tag = "3")]
+    pub pkfields: ::prost::alloc::vec::Vec<super::query::Field>,
+    #[prost(string, tag = "4")]
+    pub gtid: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "5")]
+    pub rows: ::prost::alloc::vec::Vec<super::query::Row>,
+    #[prost(message, optional, tag = "6")]
+    pub lastpk: ::core::option::Option<super::query::Row>,
+}
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LastPkEvent {
@@ -708,6 +739,7 @@ impl VReplicationWorkflowType {
 pub enum VReplicationWorkflowSubType {
     None = 0,
     Partial = 1,
+    AtomicCopy = 2,
 }
 impl VReplicationWorkflowSubType {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -718,6 +750,7 @@ impl VReplicationWorkflowSubType {
         match self {
             VReplicationWorkflowSubType::None => "None",
             VReplicationWorkflowSubType::Partial => "Partial",
+            VReplicationWorkflowSubType::AtomicCopy => "AtomicCopy",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -725,6 +758,49 @@ impl VReplicationWorkflowSubType {
         match value {
             "None" => Some(Self::None),
             "Partial" => Some(Self::Partial),
+            "AtomicCopy" => Some(Self::AtomicCopy),
+            _ => None,
+        }
+    }
+}
+/// VReplicationWorklfowState defines the valid states that a workflow can be in.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum VReplicationWorkflowState {
+    Unknown = 0,
+    Init = 1,
+    Stopped = 2,
+    Copying = 3,
+    Running = 4,
+    Error = 5,
+    Lagging = 6,
+}
+impl VReplicationWorkflowState {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            VReplicationWorkflowState::Unknown => "Unknown",
+            VReplicationWorkflowState::Init => "Init",
+            VReplicationWorkflowState::Stopped => "Stopped",
+            VReplicationWorkflowState::Copying => "Copying",
+            VReplicationWorkflowState::Running => "Running",
+            VReplicationWorkflowState::Error => "Error",
+            VReplicationWorkflowState::Lagging => "Lagging",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "Unknown" => Some(Self::Unknown),
+            "Init" => Some(Self::Init),
+            "Stopped" => Some(Self::Stopped),
+            "Copying" => Some(Self::Copying),
+            "Running" => Some(Self::Running),
+            "Error" => Some(Self::Error),
+            "Lagging" => Some(Self::Lagging),
             _ => None,
         }
     }

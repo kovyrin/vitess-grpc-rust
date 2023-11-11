@@ -432,6 +432,34 @@ pub mod vtctld_client {
                 .insert(GrpcMethod::new("vtctlservice.Vtctld", "BackupShard"));
             self.inner.server_streaming(req, path, codec).await
         }
+        /// CancelSchemaMigration cancels one or all migrations, terminating any runnign ones as needed.
+        pub async fn cancel_schema_migration(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::CancelSchemaMigrationRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::CancelSchemaMigrationResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/CancelSchemaMigration",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "CancelSchemaMigration"));
+            self.inner.unary(req, path, codec).await
+        }
         /// ChangeTabletType changes the db type for the specified tablet, if possible.
         /// This is used primarily to arrange replicas, and it will not convert a
         /// primary. For that, use InitShardPrimary.
@@ -462,6 +490,66 @@ pub mod vtctld_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("vtctlservice.Vtctld", "ChangeTabletType"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// CleanupSchemaMigration marks a schema migration as ready for artifact cleanup.
+        pub async fn cleanup_schema_migration(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::CleanupSchemaMigrationRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::CleanupSchemaMigrationResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/CleanupSchemaMigration",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("vtctlservice.Vtctld", "CleanupSchemaMigration"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        /// CompleteSchemaMigration completes one or all migrations executed with --postpone-completion.
+        pub async fn complete_schema_migration(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::CompleteSchemaMigrationRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::CompleteSchemaMigrationResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/CompleteSchemaMigration",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("vtctlservice.Vtctld", "CompleteSchemaMigration"),
+                );
             self.inner.unary(req, path, codec).await
         }
         /// CreateKeyspace creates the specified keyspace in the topology. For a
@@ -1114,6 +1202,38 @@ pub mod vtctld_client {
                 .insert(GrpcMethod::new("vtctlservice.Vtctld", "GetSchema"));
             self.inner.unary(req, path, codec).await
         }
+        /// GetSchemaMigrations returns one or more online schema migrations for the
+        /// specified keyspace, analagous to `SHOW VITESS_MIGRATIONS`.
+        ///
+        /// Different fields in the request message result in different filtering
+        /// behaviors. See the documentation on GetSchemaMigrationsRequest for details.
+        pub async fn get_schema_migrations(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::GetSchemaMigrationsRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::GetSchemaMigrationsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/GetSchemaMigrations",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "GetSchemaMigrations"));
+            self.inner.unary(req, path, codec).await
+        }
         /// GetShard returns information about a shard in the topology.
         pub async fn get_shard(
             &mut self,
@@ -1504,6 +1624,314 @@ pub mod vtctld_client {
                 .insert(GrpcMethod::new("vtctlservice.Vtctld", "InitShardPrimary"));
             self.inner.unary(req, path, codec).await
         }
+        /// LaunchSchemaMigration launches one or all migrations executed with --postpone-launch.
+        pub async fn launch_schema_migration(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::LaunchSchemaMigrationRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::LaunchSchemaMigrationResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/LaunchSchemaMigration",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "LaunchSchemaMigration"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn lookup_vindex_create(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::LookupVindexCreateRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::LookupVindexCreateResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/LookupVindexCreate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "LookupVindexCreate"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn lookup_vindex_externalize(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::LookupVindexExternalizeRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::LookupVindexExternalizeResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/LookupVindexExternalize",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("vtctlservice.Vtctld", "LookupVindexExternalize"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        /// MaterializeCreate creates a workflow to materialize one or more tables
+        /// from a source keyspace to a target keyspace using a provided expressions.
+        pub async fn materialize_create(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::MaterializeCreateRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::MaterializeCreateResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/MaterializeCreate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "MaterializeCreate"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// MigrateCreate creates a workflow which migrates one or more tables from an
+        /// external cluster into Vitess.
+        pub async fn migrate_create(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::MigrateCreateRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::WorkflowStatusResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/MigrateCreate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "MigrateCreate"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// MountRegister registers a new external Vitess cluster.
+        pub async fn mount_register(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::MountRegisterRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::MountRegisterResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/MountRegister",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "MountRegister"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// MountUnregister unregisters an external Vitess cluster.
+        pub async fn mount_unregister(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::MountUnregisterRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::MountUnregisterResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/MountUnregister",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "MountUnregister"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// MountShow returns information about an external Vitess cluster.
+        pub async fn mount_show(
+            &mut self,
+            request: impl tonic::IntoRequest<super::super::vtctldata::MountShowRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::MountShowResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/MountShow",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "MountShow"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// MountList lists all registered external Vitess clusters.
+        pub async fn mount_list(
+            &mut self,
+            request: impl tonic::IntoRequest<super::super::vtctldata::MountListRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::MountListResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/MountList",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "MountList"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// MoveTablesCreate creates a workflow which moves one or more tables from a
+        /// source keyspace to a target keyspace.
+        pub async fn move_tables_create(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::MoveTablesCreateRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::WorkflowStatusResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/MoveTablesCreate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "MoveTablesCreate"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// MoveTablesComplete completes the move and cleans up the workflow and
+        /// its related artifacts.
+        pub async fn move_tables_complete(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::MoveTablesCompleteRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::MoveTablesCompleteResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/MoveTablesComplete",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "MoveTablesComplete"));
+            self.inner.unary(req, path, codec).await
+        }
         /// PingTablet checks that the specified tablet is awake and responding to RPCs.
         /// This command can be blocked by other in-flight operations.
         pub async fn ping_tablet(
@@ -1887,6 +2315,34 @@ pub mod vtctld_client {
                 .insert(GrpcMethod::new("vtctlservice.Vtctld", "ReparentTablet"));
             self.inner.unary(req, path, codec).await
         }
+        /// ReshardCreate creates a workflow to reshard a keyspace.
+        pub async fn reshard_create(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::ReshardCreateRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::WorkflowStatusResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/ReshardCreate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "ReshardCreate"));
+            self.inner.unary(req, path, codec).await
+        }
         /// RestoreFromBackup stops mysqld for the given tablet and restores a backup.
         pub async fn restore_from_backup(
             &mut self,
@@ -1918,6 +2374,34 @@ pub mod vtctld_client {
             req.extensions_mut()
                 .insert(GrpcMethod::new("vtctlservice.Vtctld", "RestoreFromBackup"));
             self.inner.server_streaming(req, path, codec).await
+        }
+        /// RetrySchemaMigration marks a given schema migration for retry.
+        pub async fn retry_schema_migration(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::RetrySchemaMigrationRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::RetrySchemaMigrationResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/RetrySchemaMigration",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "RetrySchemaMigration"));
+            self.inner.unary(req, path, codec).await
         }
         /// RunHealthCheck runs a healthcheck on the remote tablet.
         pub async fn run_health_check(
@@ -2639,6 +3123,213 @@ pub mod vtctld_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("vtctlservice.Vtctld", "ValidateVSchema"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn v_diff_create(
+            &mut self,
+            request: impl tonic::IntoRequest<super::super::vtctldata::VDiffCreateRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::VDiffCreateResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/VDiffCreate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "VDiffCreate"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn v_diff_delete(
+            &mut self,
+            request: impl tonic::IntoRequest<super::super::vtctldata::VDiffDeleteRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::VDiffDeleteResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/VDiffDelete",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "VDiffDelete"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn v_diff_resume(
+            &mut self,
+            request: impl tonic::IntoRequest<super::super::vtctldata::VDiffResumeRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::VDiffResumeResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/VDiffResume",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "VDiffResume"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn v_diff_show(
+            &mut self,
+            request: impl tonic::IntoRequest<super::super::vtctldata::VDiffShowRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::VDiffShowResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/VDiffShow",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "VDiffShow"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn v_diff_stop(
+            &mut self,
+            request: impl tonic::IntoRequest<super::super::vtctldata::VDiffStopRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::VDiffStopResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/VDiffStop",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "VDiffStop"));
+            self.inner.unary(req, path, codec).await
+        }
+        /// WorkflowDelete deletes a vreplication workflow.
+        pub async fn workflow_delete(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::WorkflowDeleteRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::WorkflowDeleteResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/WorkflowDelete",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "WorkflowDelete"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn workflow_status(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::WorkflowStatusRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::WorkflowStatusResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/WorkflowStatus",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "WorkflowStatus"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn workflow_switch_traffic(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::vtctldata::WorkflowSwitchTrafficRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::vtctldata::WorkflowSwitchTrafficResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/vtctlservice.Vtctld/WorkflowSwitchTraffic",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("vtctlservice.Vtctld", "WorkflowSwitchTraffic"));
             self.inner.unary(req, path, codec).await
         }
         /// WorkflowUpdate updates the configuration of a vreplication workflow

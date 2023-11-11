@@ -1,4 +1,5 @@
 [workspace]
+resolver = "2"
 members = [
   "vitess-grpc",
   "vitess-grpc-test",

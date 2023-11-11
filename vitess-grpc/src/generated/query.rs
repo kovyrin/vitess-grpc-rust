@@ -1251,8 +1251,8 @@ pub struct StreamHealthResponse {
     /// or if a replica should not be used because the keyspace is being resharded.
     #[prost(bool, tag = "2")]
     pub serving: bool,
-    /// tablet_externally_reparented_timestamp can be interpreted as the
-    /// last time we knew that this tablet was the PRIMARY of this shard
+    /// primary_term_start_timestamp can be interpreted as the
+    /// last time we knew that this tablet was promoted to a PRIMARY of this shard
     /// (if StreamHealthResponse describes a group of tablets, between
     /// two vtgates, only one primary will be present in the group, and
     /// this is this primary's value).
@@ -1276,9 +1276,9 @@ pub struct StreamHealthResponse {
     ///     as PRIMARY because it was recorded as the shard's current primary in the
     ///     topology (see go/vt/vttablet/tabletmanager/init_tablet.go)
     /// OR
-    /// d) 0 if the vttablet was never a PRIMARY.
+    /// d) 0 if the vttablet is not a PRIMARY.
     #[prost(int64, tag = "3")]
-    pub tablet_externally_reparented_timestamp: i64,
+    pub primary_term_start_timestamp: i64,
     /// realtime_stats contains information about the tablet status.
     /// It is only filled in if the information is about a tablet.
     #[prost(message, optional, tag = "4")]

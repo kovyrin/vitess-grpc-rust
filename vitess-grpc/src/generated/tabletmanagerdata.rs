@@ -240,6 +240,9 @@ pub struct ApplySchemaRequest {
     pub after_schema: ::core::option::Option<SchemaDefinition>,
     #[prost(string, tag = "6")]
     pub sql_mode: ::prost::alloc::string::String,
+    /// BatchSize indicates how many queries to apply together
+    #[prost(int64, tag = "7")]
+    pub batch_size: i64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -592,6 +595,10 @@ pub struct BackupRequest {
     /// then the backup becomes incremental and applies as of given position.
     #[prost(string, tag = "3")]
     pub incremental_from_pos: ::prost::alloc::string::String,
+    /// UpgradeSafe indicates if the backup should be taken with innodb_fast_shutdown=0
+    /// so that it's a backup that can be used for an upgrade.
+    #[prost(bool, tag = "4")]
+    pub upgrade_safe: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -612,12 +619,132 @@ pub struct RestoreFromBackupRequest {
     /// Dry run does not actually performs the restore, but validates the steps and availability of backups
     #[prost(bool, tag = "3")]
     pub dry_run: bool,
+    /// RestoreToTimestamp, if given, requested an inremental restore up to (and excluding) the given timestamp.
+    /// RestoreToTimestamp and RestoreToPos are mutually exclusive.
+    #[prost(message, optional, tag = "4")]
+    pub restore_to_timestamp: ::core::option::Option<super::vttime::Time>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RestoreFromBackupResponse {
     #[prost(message, optional, tag = "1")]
     pub event: ::core::option::Option<super::logutil::Event>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreateVReplicationWorkflowRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "2")]
+    pub binlog_source: ::prost::alloc::vec::Vec<super::binlogdata::BinlogSource>,
+    /// Optional parameters.
+    #[prost(string, repeated, tag = "3")]
+    pub cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// TabletTypes is the list of tablet types to use when selecting source tablets.
+    #[prost(enumeration = "super::topodata::TabletType", repeated, tag = "4")]
+    pub tablet_types: ::prost::alloc::vec::Vec<i32>,
+    #[prost(enumeration = "TabletSelectionPreference", tag = "5")]
+    pub tablet_selection_preference: i32,
+    #[prost(enumeration = "super::binlogdata::VReplicationWorkflowType", tag = "6")]
+    pub workflow_type: i32,
+    #[prost(enumeration = "super::binlogdata::VReplicationWorkflowSubType", tag = "7")]
+    pub workflow_sub_type: i32,
+    /// DeferSecondaryKeys specifies if secondary keys should be created in one shot after table
+    /// copy finishes.
+    #[prost(bool, tag = "8")]
+    pub defer_secondary_keys: bool,
+    /// AutoStart specifies if the workflow should be started when created.
+    #[prost(bool, tag = "9")]
+    pub auto_start: bool,
+    /// Should the workflow stop after the copy phase.
+    #[prost(bool, tag = "10")]
+    pub stop_after_copy: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreateVReplicationWorkflowResponse {
+    #[prost(message, optional, tag = "1")]
+    pub result: ::core::option::Option<super::query::QueryResult>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct DeleteVReplicationWorkflowRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct DeleteVReplicationWorkflowResponse {
+    #[prost(message, optional, tag = "1")]
+    pub result: ::core::option::Option<super::query::QueryResult>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ReadVReplicationWorkflowRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ReadVReplicationWorkflowResponse {
+    #[prost(string, tag = "2")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub cells: ::prost::alloc::string::String,
+    #[prost(enumeration = "super::topodata::TabletType", repeated, tag = "4")]
+    pub tablet_types: ::prost::alloc::vec::Vec<i32>,
+    #[prost(enumeration = "TabletSelectionPreference", tag = "5")]
+    pub tablet_selection_preference: i32,
+    #[prost(string, tag = "6")]
+    pub db_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "7")]
+    pub tags: ::prost::alloc::string::String,
+    #[prost(enumeration = "super::binlogdata::VReplicationWorkflowType", tag = "8")]
+    pub workflow_type: i32,
+    #[prost(enumeration = "super::binlogdata::VReplicationWorkflowSubType", tag = "9")]
+    pub workflow_sub_type: i32,
+    #[prost(bool, tag = "10")]
+    pub defer_secondary_keys: bool,
+    #[prost(message, repeated, tag = "11")]
+    pub streams: ::prost::alloc::vec::Vec<read_v_replication_workflow_response::Stream>,
+}
+/// Nested message and enum types in `ReadVReplicationWorkflowResponse`.
+pub mod read_v_replication_workflow_response {
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct Stream {
+        #[prost(int32, tag = "1")]
+        pub id: i32,
+        #[prost(message, optional, tag = "2")]
+        pub bls: ::core::option::Option<super::super::binlogdata::BinlogSource>,
+        #[prost(string, tag = "3")]
+        pub pos: ::prost::alloc::string::String,
+        #[prost(string, tag = "4")]
+        pub stop_pos: ::prost::alloc::string::String,
+        #[prost(int64, tag = "5")]
+        pub max_tps: i64,
+        #[prost(int64, tag = "6")]
+        pub max_replication_lag: i64,
+        #[prost(message, optional, tag = "7")]
+        pub time_updated: ::core::option::Option<super::super::vttime::Time>,
+        #[prost(message, optional, tag = "8")]
+        pub transaction_timestamp: ::core::option::Option<super::super::vttime::Time>,
+        #[prost(
+            enumeration = "super::super::binlogdata::VReplicationWorkflowState",
+            tag = "9"
+        )]
+        pub state: i32,
+        #[prost(string, tag = "10")]
+        pub message: ::prost::alloc::string::String,
+        #[prost(int64, tag = "11")]
+        pub rows_copied: i64,
+        #[prost(message, optional, tag = "12")]
+        pub time_heartbeat: ::core::option::Option<super::super::vttime::Time>,
+        #[prost(message, optional, tag = "13")]
+        pub time_throttled: ::core::option::Option<super::super::vttime::Time>,
+        #[prost(string, tag = "14")]
+        pub component_throttled: ::prost::alloc::string::String,
+    }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -699,19 +826,93 @@ pub struct VDiffOptions {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateVrWorkflowRequest {
+pub struct UpdateVReplicationWorkflowRequest {
     #[prost(string, tag = "1")]
     pub workflow: ::prost::alloc::string::String,
     #[prost(string, repeated, tag = "2")]
     pub cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, repeated, tag = "3")]
-    pub tablet_types: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(enumeration = "super::binlogdata::OnDdlAction", tag = "4")]
+    #[prost(enumeration = "super::topodata::TabletType", repeated, tag = "3")]
+    pub tablet_types: ::prost::alloc::vec::Vec<i32>,
+    #[prost(enumeration = "TabletSelectionPreference", tag = "4")]
+    pub tablet_selection_preference: i32,
+    #[prost(enumeration = "super::binlogdata::OnDdlAction", tag = "5")]
     pub on_ddl: i32,
+    #[prost(enumeration = "super::binlogdata::VReplicationWorkflowState", tag = "6")]
+    pub state: i32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateVrWorkflowResponse {
+pub struct UpdateVReplicationWorkflowResponse {
     #[prost(message, optional, tag = "1")]
     pub result: ::core::option::Option<super::query::QueryResult>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ResetSequencesRequest {
+    #[prost(string, repeated, tag = "1")]
+    pub tables: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ResetSequencesResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CheckThrottlerRequest {
+    #[prost(string, tag = "1")]
+    pub app_name: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CheckThrottlerResponse {
+    /// StatusCode is HTTP compliant response code (e.g. 200 for OK)
+    #[prost(int32, tag = "1")]
+    pub status_code: i32,
+    /// Value is the metric value collected by the tablet
+    #[prost(double, tag = "2")]
+    pub value: f64,
+    /// Threshold is the throttling threshold the table was comparing the value with
+    #[prost(double, tag = "3")]
+    pub threshold: f64,
+    /// Error indicates an error retrieving the value
+    #[prost(string, tag = "4")]
+    pub error: ::prost::alloc::string::String,
+    /// Message
+    #[prost(string, tag = "5")]
+    pub message: ::prost::alloc::string::String,
+    /// RecentlyChecked indicates that the tablet has been hit with a user-facing check, which can then imply
+    /// that heartbeats lease should be renwed.
+    #[prost(bool, tag = "6")]
+    pub recently_checked: bool,
+}
+/// This structure allows us to manage tablet selection preferences
+/// which are eventually passed to a TabletPicker.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum TabletSelectionPreference {
+    Any = 0,
+    Inorder = 1,
+    /// Don't change any existing value
+    Unknown = 3,
+}
+impl TabletSelectionPreference {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            TabletSelectionPreference::Any => "ANY",
+            TabletSelectionPreference::Inorder => "INORDER",
+            TabletSelectionPreference::Unknown => "UNKNOWN",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "ANY" => Some(Self::Any),
+            "INORDER" => Some(Self::Inorder),
+            "UNKNOWN" => Some(Self::Unknown),
+            _ => None,
+        }
+    }
 }

@@ -31,6 +31,54 @@ pub struct Keyspace {
     /// If require_explicit_routing is true, vindexes and tables are not added to global routing
     #[prost(bool, tag = "4")]
     pub require_explicit_routing: bool,
+    /// foreign_key_mode dictates how Vitess should handle foreign keys for this keyspace.
+    #[prost(enumeration = "keyspace::ForeignKeyMode", tag = "5")]
+    pub foreign_key_mode: i32,
+}
+/// Nested message and enum types in `Keyspace`.
+pub mod keyspace {
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum ForeignKeyMode {
+        Unspecified = 0,
+        Disallow = 1,
+        Unmanaged = 2,
+        Managed = 3,
+    }
+    impl ForeignKeyMode {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                ForeignKeyMode::Unspecified => "unspecified",
+                ForeignKeyMode::Disallow => "disallow",
+                ForeignKeyMode::Unmanaged => "unmanaged",
+                ForeignKeyMode::Managed => "managed",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "unspecified" => Some(Self::Unspecified),
+                "disallow" => Some(Self::Disallow),
+                "unmanaged" => Some(Self::Unmanaged),
+                "managed" => Some(Self::Managed),
+                _ => None,
+            }
+        }
+    }
 }
 /// Vindex is the vindex info for a Keyspace.
 #[allow(clippy::derive_partial_eq_without_eq)]

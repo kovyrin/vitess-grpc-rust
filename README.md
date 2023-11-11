@@ -44,3 +44,17 @@ The files in the `proto` directory are copied from the [Vitess repository](https
 [Vitess LICENSE](https://github.com/vitessio/vitess/blob/main/LICENSE) file for more details.
 
 The rest of the code in this repository is licensed under the MIT license. See the [LICENSE](LICENSE) file for more details.
+
+## Vitess Update Process
+
+When a new version of Vitess is released, the following steps should be taken to update this crate:
+
+1. Update the `version` in vitess-grpc/Cargo.toml to the new Vitess version.
+2. Run `script/update-protos` to update the proto files in the `vitess-grpc/proto` directory.
+3. Run `cargo build` to make sure the crate builds.
+4. Run `scripts/start-vttestserver` to start a local Vitess cluster used for testing.
+5. Run `cargo test` to make sure the tests pass.
+6. Stop the local Vitess cluster by running `scripts/stop-vttestserver`.
+7. Commit the changes and push them to GitHub.
+8. Create a new release on GitHub.
+9. Publish the crate to crates.io with `cargo publish`.

@@ -1,6 +1,6 @@
 [package]
 name = "vitess-grpc"
-version = "0.2.0+vitess-17.0.1"
+version = "0.3.0+vitess-18.0.0"
 edition = "2021"
 authors = ["Oleksiy Kovyrin <oleksiy@kovyrin.net>"]
 description = "Vitess gRPC client library, auto-generated from the Vitess proto files using tonic-build."
@@ -12,12 +12,12 @@ documentation = "https://docs.rs/vitess-grpc"
 keywords = ["vitess", "grpc", "client", "database", "mysql"]
 
 [dependencies]
-tonic = "0.9"
-prost = "0.11"
+tonic = "0.10"
+prost = "0.12"
 
 [dev-dependencies]
 tokio = { version = "1.5", features = ["full"] }
 anyhow = "1.0"
 
 [build-dependencies]
-tonic-build = "0.9"
+tonic-build = "0.10"

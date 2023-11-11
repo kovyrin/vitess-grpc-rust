@@ -29,10 +29,34 @@ pub struct ApplyBinlogFileRequest {
     pub binlog_file_name: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub binlog_restore_position: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub binlog_restore_datetime: ::core::option::Option<super::vttime::Time>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ApplyBinlogFileResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ReadBinlogFilesTimestampsRequest {
+    #[prost(string, repeated, tag = "1")]
+    pub binlog_file_names: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ReadBinlogFilesTimestampsResponse {
+    /// FirstTimestamp is the timestamp of the first found transaction searching in order of given binlog files
+    #[prost(message, optional, tag = "1")]
+    pub first_timestamp: ::core::option::Option<super::vttime::Time>,
+    /// FirstTimestampBinlog is the name of the binary log in which the first timestamp is found
+    #[prost(string, tag = "2")]
+    pub first_timestamp_binlog: ::prost::alloc::string::String,
+    /// LastTimestamp is the timestamp of the last found transaction in given binlog files
+    #[prost(message, optional, tag = "3")]
+    pub last_timestamp: ::core::option::Option<super::vttime::Time>,
+    /// LastTimestampBinlog is the name of the binary log in which the last timestamp is found
+    #[prost(string, tag = "4")]
+    pub last_timestamp_binlog: ::prost::alloc::string::String,
+}
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ReinitConfigRequest {}
@@ -45,6 +69,15 @@ pub struct RefreshConfigRequest {}
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RefreshConfigResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VersionStringRequest {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VersionStringResponse {
+    #[prost(string, tag = "1")]
+    pub version: ::prost::alloc::string::String,
+}
 /// BackupInfo is the read-only attributes of a mysqlctl/backupstorage.BackupHandle.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -301,6 +334,33 @@ pub mod mysql_ctl_client {
                 .insert(GrpcMethod::new("mysqlctl.MysqlCtl", "ApplyBinlogFile"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn read_binlog_files_timestamps(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ReadBinlogFilesTimestampsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ReadBinlogFilesTimestampsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/mysqlctl.MysqlCtl/ReadBinlogFilesTimestamps",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("mysqlctl.MysqlCtl", "ReadBinlogFilesTimestamps"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn reinit_config(
             &mut self,
             request: impl tonic::IntoRequest<super::ReinitConfigRequest>,
@@ -349,6 +409,31 @@ pub mod mysql_ctl_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("mysqlctl.MysqlCtl", "RefreshConfig"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn version_string(
+            &mut self,
+            request: impl tonic::IntoRequest<super::VersionStringRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::VersionStringResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/mysqlctl.MysqlCtl/VersionString",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("mysqlctl.MysqlCtl", "VersionString"));
             self.inner.unary(req, path, codec).await
         }
     }

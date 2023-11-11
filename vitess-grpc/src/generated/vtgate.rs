@@ -98,6 +98,9 @@ pub struct Session {
         ::prost::alloc::string::String,
         PrepareData,
     >,
+    /// MigrationContext
+    #[prost(string, tag = "27")]
+    pub migration_context: ::prost::alloc::string::String,
 }
 /// Nested message and enum types in `Session`.
 pub mod session {

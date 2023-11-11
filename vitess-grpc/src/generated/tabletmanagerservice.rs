@@ -472,6 +472,38 @@ pub mod tablet_manager_client {
                 );
             self.inner.unary(req, path, codec).await
         }
+        pub async fn reset_sequences(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::tabletmanagerdata::ResetSequencesRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::tabletmanagerdata::ResetSequencesResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/tabletmanagerservice.TabletManager/ResetSequences",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "tabletmanagerservice.TabletManager",
+                        "ResetSequences",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn lock_tables(
             &mut self,
             request: impl tonic::IntoRequest<
@@ -958,6 +990,108 @@ pub mod tablet_manager_client {
             self.inner.unary(req, path, codec).await
         }
         /// VReplication API
+        pub async fn create_v_replication_workflow(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::tabletmanagerdata::CreateVReplicationWorkflowRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::tabletmanagerdata::CreateVReplicationWorkflowResponse,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/tabletmanagerservice.TabletManager/CreateVReplicationWorkflow",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "tabletmanagerservice.TabletManager",
+                        "CreateVReplicationWorkflow",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn delete_v_replication_workflow(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::tabletmanagerdata::DeleteVReplicationWorkflowRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::tabletmanagerdata::DeleteVReplicationWorkflowResponse,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/tabletmanagerservice.TabletManager/DeleteVReplicationWorkflow",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "tabletmanagerservice.TabletManager",
+                        "DeleteVReplicationWorkflow",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn read_v_replication_workflow(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::tabletmanagerdata::ReadVReplicationWorkflowRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<
+                super::super::tabletmanagerdata::ReadVReplicationWorkflowResponse,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/tabletmanagerservice.TabletManager/ReadVReplicationWorkflow",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "tabletmanagerservice.TabletManager",
+                        "ReadVReplicationWorkflow",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn v_replication_exec(
             &mut self,
             request: impl tonic::IntoRequest<
@@ -1024,13 +1158,15 @@ pub mod tablet_manager_client {
                 );
             self.inner.unary(req, path, codec).await
         }
-        pub async fn update_vr_workflow(
+        pub async fn update_v_replication_workflow(
             &mut self,
             request: impl tonic::IntoRequest<
-                super::super::tabletmanagerdata::UpdateVrWorkflowRequest,
+                super::super::tabletmanagerdata::UpdateVReplicationWorkflowRequest,
             >,
         ) -> std::result::Result<
-            tonic::Response<super::super::tabletmanagerdata::UpdateVrWorkflowResponse>,
+            tonic::Response<
+                super::super::tabletmanagerdata::UpdateVReplicationWorkflowResponse,
+            >,
             tonic::Status,
         > {
             self.inner
@@ -1044,14 +1180,14 @@ pub mod tablet_manager_client {
                 })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/tabletmanagerservice.TabletManager/UpdateVRWorkflow",
+                "/tabletmanagerservice.TabletManager/UpdateVReplicationWorkflow",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
                     GrpcMethod::new(
                         "tabletmanagerservice.TabletManager",
-                        "UpdateVRWorkflow",
+                        "UpdateVReplicationWorkflow",
                     ),
                 );
             self.inner.unary(req, path, codec).await
@@ -1581,6 +1717,39 @@ pub mod tablet_manager_client {
                     ),
                 );
             self.inner.server_streaming(req, path, codec).await
+        }
+        /// CheckThrottler issues a 'check' on a tablet's throttler
+        pub async fn check_throttler(
+            &mut self,
+            request: impl tonic::IntoRequest<
+                super::super::tabletmanagerdata::CheckThrottlerRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<super::super::tabletmanagerdata::CheckThrottlerResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/tabletmanagerservice.TabletManager/CheckThrottler",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "tabletmanagerservice.TabletManager",
+                        "CheckThrottler",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
         }
     }
 }

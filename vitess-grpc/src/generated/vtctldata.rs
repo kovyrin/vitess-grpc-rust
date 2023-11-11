@@ -73,6 +73,13 @@ pub struct MaterializeSettings {
     /// DeferSecondaryKeys specifies if secondary keys should be created in one shot after table copy finishes.
     #[prost(bool, tag = "14")]
     pub defer_secondary_keys: bool,
+    #[prost(
+        enumeration = "super::tabletmanagerdata::TabletSelectionPreference",
+        tag = "15"
+    )]
+    pub tablet_selection_preference: i32,
+    #[prost(bool, tag = "16")]
+    pub atomic_copy: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -81,6 +88,228 @@ pub struct Keyspace {
     pub name: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "2")]
     pub keyspace: ::core::option::Option<super::topodata::Keyspace>,
+}
+/// SchemaMigration represents a row in the schema_migrations sidecar table.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SchemaMigration {
+    #[prost(string, tag = "1")]
+    pub uuid: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub shard: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub schema: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
+    pub table: ::prost::alloc::string::String,
+    #[prost(string, tag = "6")]
+    pub migration_statement: ::prost::alloc::string::String,
+    #[prost(enumeration = "schema_migration::Strategy", tag = "7")]
+    pub strategy: i32,
+    #[prost(string, tag = "8")]
+    pub options: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "9")]
+    pub added_at: ::core::option::Option<super::vttime::Time>,
+    #[prost(message, optional, tag = "10")]
+    pub requested_at: ::core::option::Option<super::vttime::Time>,
+    #[prost(message, optional, tag = "11")]
+    pub ready_at: ::core::option::Option<super::vttime::Time>,
+    #[prost(message, optional, tag = "12")]
+    pub started_at: ::core::option::Option<super::vttime::Time>,
+    #[prost(message, optional, tag = "13")]
+    pub liveness_timestamp: ::core::option::Option<super::vttime::Time>,
+    #[prost(message, optional, tag = "14")]
+    pub completed_at: ::core::option::Option<super::vttime::Time>,
+    #[prost(message, optional, tag = "15")]
+    pub cleaned_up_at: ::core::option::Option<super::vttime::Time>,
+    #[prost(enumeration = "schema_migration::Status", tag = "16")]
+    pub status: i32,
+    #[prost(string, tag = "17")]
+    pub log_path: ::prost::alloc::string::String,
+    #[prost(string, tag = "18")]
+    pub artifacts: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "19")]
+    pub retries: u64,
+    #[prost(message, optional, tag = "20")]
+    pub tablet: ::core::option::Option<super::topodata::TabletAlias>,
+    #[prost(bool, tag = "21")]
+    pub tablet_failure: bool,
+    #[prost(float, tag = "22")]
+    pub progress: f32,
+    #[prost(string, tag = "23")]
+    pub migration_context: ::prost::alloc::string::String,
+    #[prost(string, tag = "24")]
+    pub ddl_action: ::prost::alloc::string::String,
+    #[prost(string, tag = "25")]
+    pub message: ::prost::alloc::string::String,
+    #[prost(int64, tag = "26")]
+    pub eta_seconds: i64,
+    #[prost(uint64, tag = "27")]
+    pub rows_copied: u64,
+    #[prost(int64, tag = "28")]
+    pub table_rows: i64,
+    #[prost(uint32, tag = "29")]
+    pub added_unique_keys: u32,
+    #[prost(uint32, tag = "30")]
+    pub removed_unique_keys: u32,
+    #[prost(string, tag = "31")]
+    pub log_file: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "32")]
+    pub artifact_retention: ::core::option::Option<super::vttime::Duration>,
+    #[prost(bool, tag = "33")]
+    pub postpone_completion: bool,
+    #[prost(string, tag = "34")]
+    pub removed_unique_key_names: ::prost::alloc::string::String,
+    #[prost(string, tag = "35")]
+    pub dropped_no_default_column_names: ::prost::alloc::string::String,
+    #[prost(string, tag = "36")]
+    pub expanded_column_names: ::prost::alloc::string::String,
+    #[prost(string, tag = "37")]
+    pub revertible_notes: ::prost::alloc::string::String,
+    #[prost(bool, tag = "38")]
+    pub allow_concurrent: bool,
+    #[prost(string, tag = "39")]
+    pub reverted_uuid: ::prost::alloc::string::String,
+    #[prost(bool, tag = "40")]
+    pub is_view: bool,
+    #[prost(bool, tag = "41")]
+    pub ready_to_complete: bool,
+    #[prost(int64, tag = "42")]
+    pub vitess_liveness_indicator: i64,
+    #[prost(float, tag = "43")]
+    pub user_throttle_ratio: f32,
+    #[prost(string, tag = "44")]
+    pub special_plan: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "45")]
+    pub last_throttled_at: ::core::option::Option<super::vttime::Time>,
+    #[prost(string, tag = "46")]
+    pub component_throttled: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "47")]
+    pub cancelled_at: ::core::option::Option<super::vttime::Time>,
+    #[prost(bool, tag = "48")]
+    pub postpone_launch: bool,
+    /// enum?
+    #[prost(string, tag = "49")]
+    pub stage: ::prost::alloc::string::String,
+    #[prost(uint32, tag = "50")]
+    pub cutover_attempts: u32,
+    #[prost(bool, tag = "51")]
+    pub is_immediate_operation: bool,
+    #[prost(message, optional, tag = "52")]
+    pub reviewed_at: ::core::option::Option<super::vttime::Time>,
+    #[prost(message, optional, tag = "53")]
+    pub ready_to_complete_at: ::core::option::Option<super::vttime::Time>,
+}
+/// Nested message and enum types in `SchemaMigration`.
+pub mod schema_migration {
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum Strategy {
+        /// SchemaMigration_VITESS uses vreplication to run the schema migration. It is
+        /// the default strategy for OnlineDDL requests.
+        ///
+        /// SchemaMigration_VITESS was also formerly called "ONLINE".
+        Vitess = 0,
+        Ghost = 1,
+        Ptosc = 2,
+        /// SchemaMigration_DIRECT runs the migration directly against MySQL (e.g. `ALTER TABLE ...`),
+        /// meaning it is not actually an "online" DDL migration.
+        Direct = 3,
+        /// SchemaMigration_MYSQL is a managed migration (queued and executed by the
+        /// scheduler) but runs through a MySQL `ALTER TABLE`.
+        Mysql = 4,
+    }
+    impl Strategy {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                Strategy::Vitess => "VITESS",
+                Strategy::Ghost => "GHOST",
+                Strategy::Ptosc => "PTOSC",
+                Strategy::Direct => "DIRECT",
+                Strategy::Mysql => "MYSQL",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "VITESS" => Some(Self::Vitess),
+                "GHOST" => Some(Self::Ghost),
+                "PTOSC" => Some(Self::Ptosc),
+                "DIRECT" => Some(Self::Direct),
+                "MYSQL" => Some(Self::Mysql),
+                _ => None,
+            }
+        }
+    }
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum Status {
+        Unknown = 0,
+        Requested = 1,
+        Cancelled = 2,
+        Queued = 3,
+        Ready = 4,
+        Running = 5,
+        Complete = 6,
+        Failed = 7,
+    }
+    impl Status {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                Status::Unknown => "UNKNOWN",
+                Status::Requested => "REQUESTED",
+                Status::Cancelled => "CANCELLED",
+                Status::Queued => "QUEUED",
+                Status::Ready => "READY",
+                Status::Running => "RUNNING",
+                Status::Complete => "COMPLETE",
+                Status::Failed => "FAILED",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "UNKNOWN" => Some(Self::Unknown),
+                "REQUESTED" => Some(Self::Requested),
+                "CANCELLED" => Some(Self::Cancelled),
+                "QUEUED" => Some(Self::Queued),
+                "READY" => Some(Self::Ready),
+                "RUNNING" => Some(Self::Running),
+                "COMPLETE" => Some(Self::Complete),
+                "FAILED" => Some(Self::Failed),
+                _ => None,
+            }
+        }
+    }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -102,6 +331,8 @@ pub struct Workflow {
     pub source: ::core::option::Option<workflow::ReplicationLocation>,
     #[prost(message, optional, tag = "3")]
     pub target: ::core::option::Option<workflow::ReplicationLocation>,
+    /// This represents how long it's been since we processed any event in the
+    /// stream.
     #[prost(int64, tag = "4")]
     pub max_v_replication_lag: i64,
     #[prost(map = "string, message", tag = "5")]
@@ -113,6 +344,14 @@ pub struct Workflow {
     pub workflow_type: ::prost::alloc::string::String,
     #[prost(string, tag = "7")]
     pub workflow_sub_type: ::prost::alloc::string::String,
+    /// This represents the lag across all shards, between the current time and
+    /// the timestamp of the last transaction OR heartbeat timestamp (if there
+    /// have been no writes to replicate from the source).
+    #[prost(int64, tag = "8")]
+    pub max_v_replication_transaction_lag: i64,
+    /// This specifies whether to defer the creation of secondary keys.
+    #[prost(bool, tag = "9")]
+    pub defer_secondary_keys: bool,
 }
 /// Nested message and enum types in `Workflow`.
 pub mod workflow {
@@ -174,11 +413,15 @@ pub mod workflow {
         ///
         /// Note that this field being set does not necessarily mean that Logs is nil;
         /// if there are N logs that exist for the stream, and we fail to fetch the
-        /// ith log, we will still return logs in [0, i) + (i, N].
+        /// ith log, we will still return logs in \[0, i) + (i, N\].
         #[prost(string, tag = "14")]
         pub log_fetch_error: ::prost::alloc::string::String,
         #[prost(string, repeated, tag = "15")]
         pub tags: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+        #[prost(int64, tag = "16")]
+        pub rows_copied: i64,
+        #[prost(message, optional, tag = "17")]
+        pub throttler_status: ::core::option::Option<stream::ThrottlerStatus>,
     }
     /// Nested message and enum types in `Stream`.
     pub mod stream {
@@ -209,6 +452,16 @@ pub mod workflow {
             pub message: ::prost::alloc::string::String,
             #[prost(int64, tag = "8")]
             pub count: i64,
+        }
+        #[allow(clippy::derive_partial_eq_without_eq)]
+        #[derive(Clone, PartialEq, ::prost::Message)]
+        pub struct ThrottlerStatus {
+            #[prost(string, tag = "1")]
+            pub component_throttled: ::prost::alloc::string::String,
+            #[prost(message, optional, tag = "2")]
+            pub time_throttled: ::core::option::Option<
+                super::super::super::vttime::Time,
+            >,
         }
     }
 }
@@ -277,9 +530,6 @@ pub struct ApplyShardRoutingRulesResponse {}
 pub struct ApplySchemaRequest {
     #[prost(string, tag = "1")]
     pub keyspace: ::prost::alloc::string::String,
-    /// Allow large schema changes which incur a longer unavailability of the database.
-    #[prost(bool, tag = "2")]
-    pub allow_long_unavailability: bool,
     /// SQL commands to run.
     #[prost(string, repeated, tag = "3")]
     pub sql: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
@@ -298,19 +548,24 @@ pub struct ApplySchemaRequest {
     /// up in reparenting.
     #[prost(message, optional, tag = "7")]
     pub wait_replicas_timeout: ::core::option::Option<super::vttime::Duration>,
-    /// Skip pre-apply schema checks, and directly forward schema change query to shards
-    #[prost(bool, tag = "8")]
-    pub skip_preflight: bool,
     /// caller_id identifies the caller. This is the effective caller ID,
     /// set by the application to further identify the caller.
     #[prost(message, optional, tag = "9")]
     pub caller_id: ::core::option::Option<super::vtrpc::CallerId>,
+    /// BatchSize indicates how many queries to apply together
+    #[prost(int64, tag = "10")]
+    pub batch_size: i64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ApplySchemaResponse {
     #[prost(string, repeated, tag = "1")]
     pub uuid_list: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(map = "string, uint64", tag = "2")]
+    pub rows_affected_by_shard: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        u64,
+    >,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -353,6 +608,10 @@ pub struct BackupRequest {
     /// then the backup becomes incremental and applies as of given position.
     #[prost(string, tag = "4")]
     pub incremental_from_pos: ::prost::alloc::string::String,
+    /// UpgradeSafe indicates if the backup should be taken with innodb_fast_shutdown=0
+    /// so that it's a backup that can be used for an upgrade.
+    #[prost(bool, tag = "5")]
+    pub upgrade_safe: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -382,6 +641,31 @@ pub struct BackupShardRequest {
     /// simultaneously.
     #[prost(uint64, tag = "4")]
     pub concurrency: u64,
+    /// UpgradeSafe indicates if the backup should be taken with innodb_fast_shutdown=0
+    /// so that it's a backup that can be used for an upgrade.
+    #[prost(bool, tag = "5")]
+    pub upgrade_safe: bool,
+    /// IncrementalFromPos indicates a position of a previous backup. When this value is non-empty
+    /// then the backup becomes incremental and applies as of given position.
+    #[prost(string, tag = "6")]
+    pub incremental_from_pos: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CancelSchemaMigrationRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub uuid: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CancelSchemaMigrationResponse {
+    #[prost(map = "string, uint64", tag = "1")]
+    pub rows_affected_by_shard: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        u64,
+    >,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -402,6 +686,40 @@ pub struct ChangeTabletTypeResponse {
     pub after_tablet: ::core::option::Option<super::topodata::Tablet>,
     #[prost(bool, tag = "3")]
     pub was_dry_run: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CleanupSchemaMigrationRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub uuid: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CleanupSchemaMigrationResponse {
+    #[prost(map = "string, uint64", tag = "1")]
+    pub rows_affected_by_shard: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        u64,
+    >,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CompleteSchemaMigrationRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub uuid: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CompleteSchemaMigrationResponse {
+    #[prost(map = "string, uint64", tag = "1")]
+    pub rows_affected_by_shard: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        u64,
+    >,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -592,6 +910,10 @@ pub struct EmergencyReparentShardRequest {
     /// as the failed primary.
     #[prost(bool, tag = "6")]
     pub prevent_cross_cell_promotion: bool,
+    /// WaitForAllTablets makes ERS wait for a response from all the tablets before proceeding.
+    /// Useful when all the tablets are up and reachable.
+    #[prost(bool, tag = "7")]
+    pub wait_for_all_tablets: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -850,6 +1172,50 @@ pub struct GetSchemaResponse {
     #[prost(message, optional, tag = "1")]
     pub schema: ::core::option::Option<super::tabletmanagerdata::SchemaDefinition>,
 }
+/// GetSchemaMigrationsRequest controls the behavior of the GetSchemaMigrations
+/// rpc.
+///
+/// Keyspace is a required field, while all other fields are optional.
+///
+/// If UUID is set, other optional fields will be ignored, since there will be at
+/// most one migration with that UUID. Furthermore, if no migration with that
+/// UUID exists, an empty response, not an error, is returned.
+///
+/// MigrationContext, Status, and Recent are mutually exclusive.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetSchemaMigrationsRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    /// Uuid, if set, will cause GetSchemaMigrations to return exactly 1 migration,
+    /// namely the one with that UUID. If no migration exists, the response will
+    /// be an empty slice, not an error.
+    ///
+    /// If this field is set, other fields (status filters, limit, skip, order) are
+    /// ignored.
+    #[prost(string, tag = "2")]
+    pub uuid: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub migration_context: ::prost::alloc::string::String,
+    #[prost(enumeration = "schema_migration::Status", tag = "4")]
+    pub status: i32,
+    /// Recent, if set, returns migrations requested between now and the provided
+    /// value.
+    #[prost(message, optional, tag = "5")]
+    pub recent: ::core::option::Option<super::vttime::Duration>,
+    #[prost(enumeration = "QueryOrdering", tag = "6")]
+    pub order: i32,
+    #[prost(uint64, tag = "7")]
+    pub limit: u64,
+    #[prost(uint64, tag = "8")]
+    pub skip: u64,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetSchemaMigrationsResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub migrations: ::prost::alloc::vec::Vec<SchemaMigration>,
+}
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetShardRequest {
@@ -944,6 +1310,9 @@ pub struct UpdateThrottlerConfigRequest {
     /// CheckAsCheckShard instructs the throttler to respond to /check requests by checking the shard's health (this is the default behavior)
     #[prost(bool, tag = "8")]
     pub check_as_check_shard: bool,
+    /// ThrottledApp indicates a single throttled app rule (ignored if name is empty)
+    #[prost(message, optional, tag = "9")]
+    pub throttled_app: ::core::option::Option<super::topodata::ThrottledAppRule>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1085,6 +1454,11 @@ pub struct GetWorkflowsRequest {
     pub active_only: bool,
     #[prost(bool, tag = "3")]
     pub name_only: bool,
+    /// If you only want a specific workflow then set this field.
+    #[prost(string, tag = "4")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(bool, tag = "5")]
+    pub include_logs: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1111,6 +1485,301 @@ pub struct InitShardPrimaryRequest {
 pub struct InitShardPrimaryResponse {
     #[prost(message, repeated, tag = "1")]
     pub events: ::prost::alloc::vec::Vec<super::logutil::Event>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct LaunchSchemaMigrationRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub uuid: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct LaunchSchemaMigrationResponse {
+    #[prost(map = "string, uint64", tag = "1")]
+    pub rows_affected_by_shard: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        u64,
+    >,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct LookupVindexCreateRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "3")]
+    pub cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(message, optional, tag = "4")]
+    pub vindex: ::core::option::Option<super::vschema::Keyspace>,
+    #[prost(bool, tag = "5")]
+    pub continue_after_copy_with_owner: bool,
+    #[prost(enumeration = "super::topodata::TabletType", repeated, tag = "6")]
+    pub tablet_types: ::prost::alloc::vec::Vec<i32>,
+    #[prost(
+        enumeration = "super::tabletmanagerdata::TabletSelectionPreference",
+        tag = "7"
+    )]
+    pub tablet_selection_preference: i32,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct LookupVindexCreateResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct LookupVindexExternalizeRequest {
+    /// Where the lookup vindex lives.
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    /// This is the name of the lookup vindex and the vreplication workflow.
+    #[prost(string, tag = "2")]
+    pub name: ::prost::alloc::string::String,
+    /// Where the vreplication workflow lives.
+    #[prost(string, tag = "3")]
+    pub table_keyspace: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct LookupVindexExternalizeResponse {
+    /// Was the workflow also deleted.
+    #[prost(bool, tag = "1")]
+    pub workflow_deleted: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MaterializeCreateRequest {
+    #[prost(message, optional, tag = "1")]
+    pub settings: ::core::option::Option<MaterializeSettings>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MaterializeCreateResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MigrateCreateRequest {
+    /// The necessary info gets passed on to each primary tablet involved
+    /// in the workflow via the CreateVReplicationWorkflow tabletmanager RPC.
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub source_keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub target_keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub mount_name: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "5")]
+    pub cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(enumeration = "super::topodata::TabletType", repeated, tag = "6")]
+    pub tablet_types: ::prost::alloc::vec::Vec<i32>,
+    #[prost(
+        enumeration = "super::tabletmanagerdata::TabletSelectionPreference",
+        tag = "7"
+    )]
+    pub tablet_selection_preference: i32,
+    #[prost(bool, tag = "8")]
+    pub all_tables: bool,
+    #[prost(string, repeated, tag = "9")]
+    pub include_tables: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag = "10")]
+    pub exclude_tables: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// SourceTimeZone is the time zone in which datetimes on the source were stored, provided as an option in MoveTables
+    #[prost(string, tag = "11")]
+    pub source_time_zone: ::prost::alloc::string::String,
+    /// OnDdl specifies the action to be taken when a DDL is encountered.
+    #[prost(string, tag = "12")]
+    pub on_ddl: ::prost::alloc::string::String,
+    /// StopAfterCopy specifies if vreplication should be stopped after copying.
+    #[prost(bool, tag = "13")]
+    pub stop_after_copy: bool,
+    /// DropForeignKeys specifies if foreign key constraints should be elided on the target.
+    #[prost(bool, tag = "14")]
+    pub drop_foreign_keys: bool,
+    /// DeferSecondaryKeys specifies if secondary keys should be created in one shot after table copy finishes.
+    #[prost(bool, tag = "15")]
+    pub defer_secondary_keys: bool,
+    /// Start the workflow after creating it.
+    #[prost(bool, tag = "16")]
+    pub auto_start: bool,
+    /// NoRoutingRules is set to true if routing rules should not be created on the target when the workflow is created.
+    #[prost(bool, tag = "17")]
+    pub no_routing_rules: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MigrateCompleteRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub target_keyspace: ::prost::alloc::string::String,
+    #[prost(bool, tag = "4")]
+    pub keep_data: bool,
+    #[prost(bool, tag = "5")]
+    pub keep_routing_rules: bool,
+    #[prost(bool, tag = "6")]
+    pub rename_tables: bool,
+    #[prost(bool, tag = "7")]
+    pub dry_run: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MigrateCompleteResponse {
+    #[prost(string, tag = "1")]
+    pub summary: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "2")]
+    pub dry_run_results: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MountRegisterRequest {
+    #[prost(string, tag = "1")]
+    pub topo_type: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub topo_server: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub topo_root: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub name: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MountRegisterResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MountUnregisterRequest {
+    #[prost(string, tag = "4")]
+    pub name: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MountUnregisterResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MountShowRequest {
+    #[prost(string, tag = "4")]
+    pub name: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MountShowResponse {
+    #[prost(string, tag = "1")]
+    pub topo_type: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub topo_server: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub topo_root: ::prost::alloc::string::String,
+    #[prost(string, tag = "4")]
+    pub name: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MountListRequest {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MountListResponse {
+    #[prost(string, repeated, tag = "1")]
+    pub names: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MoveTablesCreateRequest {
+    /// The necessary info gets passed on to each primary tablet involved
+    /// in the workflow via the CreateVReplicationWorkflow tabletmanager RPC.
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub source_keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub target_keyspace: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "4")]
+    pub cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(enumeration = "super::topodata::TabletType", repeated, tag = "5")]
+    pub tablet_types: ::prost::alloc::vec::Vec<i32>,
+    #[prost(
+        enumeration = "super::tabletmanagerdata::TabletSelectionPreference",
+        tag = "6"
+    )]
+    pub tablet_selection_preference: i32,
+    #[prost(string, repeated, tag = "7")]
+    pub source_shards: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(bool, tag = "8")]
+    pub all_tables: bool,
+    #[prost(string, repeated, tag = "9")]
+    pub include_tables: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag = "10")]
+    pub exclude_tables: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// The name of the external cluster mounted in topo server.
+    #[prost(string, tag = "11")]
+    pub external_cluster_name: ::prost::alloc::string::String,
+    /// SourceTimeZone is the time zone in which datetimes on the source were stored, provided as an option in MoveTables
+    #[prost(string, tag = "12")]
+    pub source_time_zone: ::prost::alloc::string::String,
+    /// OnDdl specifies the action to be taken when a DDL is encountered.
+    #[prost(string, tag = "13")]
+    pub on_ddl: ::prost::alloc::string::String,
+    /// StopAfterCopy specifies if vreplication should be stopped after copying.
+    #[prost(bool, tag = "14")]
+    pub stop_after_copy: bool,
+    /// DropForeignKeys specifies if foreign key constraints should be elided on the target.
+    #[prost(bool, tag = "15")]
+    pub drop_foreign_keys: bool,
+    /// DeferSecondaryKeys specifies if secondary keys should be created in one shot after table copy finishes.
+    #[prost(bool, tag = "16")]
+    pub defer_secondary_keys: bool,
+    /// Start the workflow after creating it.
+    #[prost(bool, tag = "17")]
+    pub auto_start: bool,
+    /// NoRoutingRules is set to true if routing rules should not be created on the target when the workflow is created.
+    #[prost(bool, tag = "18")]
+    pub no_routing_rules: bool,
+    /// Run a single copy phase for the entire database.
+    #[prost(bool, tag = "19")]
+    pub atomic_copy: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MoveTablesCreateResponse {
+    #[prost(string, tag = "1")]
+    pub summary: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "2")]
+    pub details: ::prost::alloc::vec::Vec<move_tables_create_response::TabletInfo>,
+}
+/// Nested message and enum types in `MoveTablesCreateResponse`.
+pub mod move_tables_create_response {
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct TabletInfo {
+        #[prost(message, optional, tag = "1")]
+        pub tablet: ::core::option::Option<super::super::topodata::TabletAlias>,
+        /// Created is set if the workflow was created on this tablet or not.
+        #[prost(bool, tag = "2")]
+        pub created: bool,
+    }
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MoveTablesCompleteRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub target_keyspace: ::prost::alloc::string::String,
+    #[prost(bool, tag = "4")]
+    pub keep_data: bool,
+    #[prost(bool, tag = "5")]
+    pub keep_routing_rules: bool,
+    #[prost(bool, tag = "6")]
+    pub rename_tables: bool,
+    #[prost(bool, tag = "7")]
+    pub dry_run: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MoveTablesCompleteResponse {
+    #[prost(string, tag = "1")]
+    pub summary: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "2")]
+    pub dry_run_results: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1357,6 +2026,43 @@ pub struct ReparentTabletResponse {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ReshardCreateRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "3")]
+    pub source_shards: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag = "4")]
+    pub target_shards: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag = "5")]
+    pub cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(enumeration = "super::topodata::TabletType", repeated, tag = "6")]
+    pub tablet_types: ::prost::alloc::vec::Vec<i32>,
+    #[prost(
+        enumeration = "super::tabletmanagerdata::TabletSelectionPreference",
+        tag = "7"
+    )]
+    pub tablet_selection_preference: i32,
+    /// SkipSchemaCopy specifies if the schema should be copied from the source shard, set false if
+    /// schema is already created on the target shard before Reshard is invoked.
+    #[prost(bool, tag = "8")]
+    pub skip_schema_copy: bool,
+    /// OnDdl specifies the action to be taken when a DDL is encountered.
+    #[prost(string, tag = "9")]
+    pub on_ddl: ::prost::alloc::string::String,
+    /// StopAfterCopy specifies if vreplication should be stopped after copying.
+    #[prost(bool, tag = "10")]
+    pub stop_after_copy: bool,
+    /// DeferSecondaryKeys specifies if secondary keys should be created in one shot after table copy finishes.
+    #[prost(bool, tag = "11")]
+    pub defer_secondary_keys: bool,
+    /// Start the workflow after creating it.
+    #[prost(bool, tag = "12")]
+    pub auto_start: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RestoreFromBackupRequest {
     #[prost(message, optional, tag = "1")]
     pub tablet_alias: ::core::option::Option<super::topodata::TabletAlias>,
@@ -1372,6 +2078,10 @@ pub struct RestoreFromBackupRequest {
     /// Dry run does not actually performs the restore, but validates the steps and availability of backups
     #[prost(bool, tag = "4")]
     pub dry_run: bool,
+    /// RestoreToTimestamp, if given, requested an inremental restore up to (and excluding) the given timestamp.
+    /// RestoreToTimestamp and RestoreToPos are mutually exclusive.
+    #[prost(message, optional, tag = "5")]
+    pub restore_to_timestamp: ::core::option::Option<super::vttime::Time>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1385,6 +2095,23 @@ pub struct RestoreFromBackupResponse {
     pub shard: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "4")]
     pub event: ::core::option::Option<super::logutil::Event>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RetrySchemaMigrationRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub uuid: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RetrySchemaMigrationResponse {
+    #[prost(map = "string, uint64", tag = "1")]
+    pub rows_affected_by_shard: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        u64,
+    >,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -1844,14 +2571,260 @@ pub struct ValidateVSchemaResponse {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VDiffCreateRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub target_keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub uuid: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "4")]
+    pub source_cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag = "5")]
+    pub target_cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(enumeration = "super::topodata::TabletType", repeated, tag = "6")]
+    pub tablet_types: ::prost::alloc::vec::Vec<i32>,
+    #[prost(
+        enumeration = "super::tabletmanagerdata::TabletSelectionPreference",
+        tag = "7"
+    )]
+    pub tablet_selection_preference: i32,
+    #[prost(string, repeated, tag = "8")]
+    pub tables: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(int64, tag = "9")]
+    pub limit: i64,
+    #[prost(message, optional, tag = "10")]
+    pub filtered_replication_wait_time: ::core::option::Option<super::vttime::Duration>,
+    #[prost(bool, tag = "11")]
+    pub debug_query: bool,
+    #[prost(bool, tag = "12")]
+    pub only_p_ks: bool,
+    #[prost(bool, tag = "13")]
+    pub update_table_stats: bool,
+    #[prost(int64, tag = "14")]
+    pub max_extra_rows_to_compare: i64,
+    #[prost(bool, tag = "15")]
+    pub wait: bool,
+    #[prost(message, optional, tag = "16")]
+    pub wait_update_interval: ::core::option::Option<super::vttime::Duration>,
+    #[prost(bool, tag = "17")]
+    pub auto_retry: bool,
+    #[prost(bool, tag = "18")]
+    pub verbose: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VDiffCreateResponse {
+    /// Intentionally upper case to maintain compatibility with
+    /// vtctlclient and other VDiff client command output.
+    #[prost(string, tag = "1")]
+    pub uuid: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VDiffDeleteRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub target_keyspace: ::prost::alloc::string::String,
+    /// This will be 'all' or a UUID.
+    #[prost(string, tag = "3")]
+    pub arg: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VDiffDeleteResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VDiffResumeRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub target_keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub uuid: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VDiffResumeResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VDiffShowRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub target_keyspace: ::prost::alloc::string::String,
+    /// This will be 'all', 'last', or a UUID.
+    #[prost(string, tag = "3")]
+    pub arg: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VDiffShowResponse {
+    /// The key is keyspace/shard.
+    #[prost(map = "string, message", tag = "1")]
+    pub tablet_responses: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        super::tabletmanagerdata::VDiffResponse,
+    >,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VDiffStopRequest {
+    #[prost(string, tag = "1")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub target_keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub uuid: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct VDiffStopResponse {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WorkflowDeleteRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(bool, tag = "3")]
+    pub keep_data: bool,
+    #[prost(bool, tag = "4")]
+    pub keep_routing_rules: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WorkflowDeleteResponse {
+    #[prost(string, tag = "1")]
+    pub summary: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "2")]
+    pub details: ::prost::alloc::vec::Vec<workflow_delete_response::TabletInfo>,
+}
+/// Nested message and enum types in `WorkflowDeleteResponse`.
+pub mod workflow_delete_response {
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct TabletInfo {
+        #[prost(message, optional, tag = "1")]
+        pub tablet: ::core::option::Option<super::super::topodata::TabletAlias>,
+        /// Delete is set if the workflow was deleted on this tablet.
+        #[prost(bool, tag = "2")]
+        pub deleted: bool,
+    }
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WorkflowStatusRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub workflow: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WorkflowStatusResponse {
+    /// The key is keyspace/shard.
+    #[prost(map = "string, message", tag = "1")]
+    pub table_copy_state: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        workflow_status_response::TableCopyState,
+    >,
+    #[prost(map = "string, message", tag = "2")]
+    pub shard_streams: ::std::collections::HashMap<
+        ::prost::alloc::string::String,
+        workflow_status_response::ShardStreams,
+    >,
+    #[prost(string, tag = "3")]
+    pub traffic_state: ::prost::alloc::string::String,
+}
+/// Nested message and enum types in `WorkflowStatusResponse`.
+pub mod workflow_status_response {
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct TableCopyState {
+        #[prost(int64, tag = "1")]
+        pub rows_copied: i64,
+        #[prost(int64, tag = "2")]
+        pub rows_total: i64,
+        #[prost(float, tag = "3")]
+        pub rows_percentage: f32,
+        #[prost(int64, tag = "4")]
+        pub bytes_copied: i64,
+        #[prost(int64, tag = "5")]
+        pub bytes_total: i64,
+        #[prost(float, tag = "6")]
+        pub bytes_percentage: f32,
+    }
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct ShardStreamState {
+        #[prost(int32, tag = "1")]
+        pub id: i32,
+        #[prost(message, optional, tag = "2")]
+        pub tablet: ::core::option::Option<super::super::topodata::TabletAlias>,
+        #[prost(string, tag = "3")]
+        pub source_shard: ::prost::alloc::string::String,
+        #[prost(string, tag = "4")]
+        pub position: ::prost::alloc::string::String,
+        #[prost(string, tag = "5")]
+        pub status: ::prost::alloc::string::String,
+        #[prost(string, tag = "6")]
+        pub info: ::prost::alloc::string::String,
+    }
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct ShardStreams {
+        #[prost(message, repeated, tag = "2")]
+        pub streams: ::prost::alloc::vec::Vec<ShardStreamState>,
+    }
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WorkflowSwitchTrafficRequest {
+    #[prost(string, tag = "1")]
+    pub keyspace: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub workflow: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "3")]
+    pub cells: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(enumeration = "super::topodata::TabletType", repeated, tag = "4")]
+    pub tablet_types: ::prost::alloc::vec::Vec<i32>,
+    #[prost(message, optional, tag = "5")]
+    pub max_replication_lag_allowed: ::core::option::Option<super::vttime::Duration>,
+    #[prost(bool, tag = "6")]
+    pub enable_reverse_replication: bool,
+    #[prost(int32, tag = "7")]
+    pub direction: i32,
+    #[prost(message, optional, tag = "8")]
+    pub timeout: ::core::option::Option<super::vttime::Duration>,
+    #[prost(bool, tag = "9")]
+    pub dry_run: bool,
+    #[prost(bool, tag = "10")]
+    pub initialize_target_sequences: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WorkflowSwitchTrafficResponse {
+    #[prost(string, tag = "1")]
+    pub summary: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub start_state: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub current_state: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "4")]
+    pub dry_run_results: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct WorkflowUpdateRequest {
     #[prost(string, tag = "1")]
     pub keyspace: ::prost::alloc::string::String,
     /// TabletRequest gets passed on to each primary tablet involved
-    /// in the workflow via the UpdateVRWorkflow tabletmanager RPC.
+    /// in the workflow via the UpdateVReplicationWorkflow tabletmanager RPC.
     #[prost(message, optional, tag = "2")]
     pub tablet_request: ::core::option::Option<
-        super::tabletmanagerdata::UpdateVrWorkflowRequest,
+        super::tabletmanagerdata::UpdateVReplicationWorkflowRequest,
     >,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -1867,11 +2840,10 @@ pub mod workflow_update_response {
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct TabletInfo {
-        #[prost(string, tag = "1")]
-        pub tablet: ::prost::alloc::string::String,
+        #[prost(message, optional, tag = "1")]
+        pub tablet: ::core::option::Option<super::super::topodata::TabletAlias>,
         /// Changed is true if any of the provided values were different
-        /// than what was already stored. The value is based on the query
-        /// result's RowsAffected being 0 or not.
+        /// than what was already stored on this tablet.
         #[prost(bool, tag = "2")]
         pub changed: bool,
     }
@@ -1905,6 +2877,35 @@ impl MaterializationIntent {
             "CUSTOM" => Some(Self::Custom),
             "MOVETABLES" => Some(Self::Movetables),
             "CREATELOOKUPINDEX" => Some(Self::Createlookupindex),
+            _ => None,
+        }
+    }
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum QueryOrdering {
+    None = 0,
+    Ascending = 1,
+    Descending = 2,
+}
+impl QueryOrdering {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            QueryOrdering::None => "NONE",
+            QueryOrdering::Ascending => "ASCENDING",
+            QueryOrdering::Descending => "DESCENDING",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "NONE" => Some(Self::None),
+            "ASCENDING" => Some(Self::Ascending),
+            "DESCENDING" => Some(Self::Descending),
             _ => None,
         }
     }
