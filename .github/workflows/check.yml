@@ -59,7 +59,7 @@ jobs:
           components: clippy
 
       - name: Install Protoc
-        uses: arduino/setup-protoc@v2
+        uses: arduino/setup-protoc@v3
 
       - name: cargo clippy
         uses: actions-rs/clippy-check@v1
@@ -81,7 +81,7 @@ jobs:
         uses: dtolnay/rust-toolchain@nightly
 
       - name: Install Protoc
-        uses: arduino/setup-protoc@v2
+        uses: arduino/setup-protoc@v3
 
       - name: cargo doc
         run: cargo doc --no-deps --all-features
@@ -102,7 +102,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install Protoc
-        uses: arduino/setup-protoc@v2
+        uses: arduino/setup-protoc@v3
 
       - name: cargo install cargo-hack
         uses: taiki-e/install-action@cargo-hack
@@ -133,7 +133,7 @@ jobs:
           toolchain: ${{ matrix.msrv }}
 
       - name: Install Protoc
-        uses: arduino/setup-protoc@v2
+        uses: arduino/setup-protoc@v3
 
       - name: cargo +${{ matrix.msrv }} check
         run: cargo check

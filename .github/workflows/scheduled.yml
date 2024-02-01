@@ -35,7 +35,7 @@ jobs:
         run: cargo generate-lockfile
 
       - name: Install Protoc
-        uses: arduino/setup-protoc@v2
+        uses: arduino/setup-protoc@v3
 
       - uses: isbang/compose-action@v1.5.1
         with:
@@ -71,7 +71,7 @@ jobs:
         run: cargo update
 
       - name: Install Protoc
-        uses: arduino/setup-protoc@v2
+        uses: arduino/setup-protoc@v3
 
       - uses: isbang/compose-action@v1.5.1
         with:
