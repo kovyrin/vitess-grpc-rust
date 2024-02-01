@@ -33,7 +33,7 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
 
       - name: Install Protoc
-        uses: arduino/setup-protoc@v2
+        uses: arduino/setup-protoc@v3
 
       - uses: isbang/compose-action@v1.5.1
         with:
@@ -78,7 +78,7 @@ jobs:
   #       uses: dtolnay/rust-toolchain@nightly
 
   #     - name: Install Protoc
-  #       uses: arduino/setup-protoc@v2
+  #       uses: arduino/setup-protoc@v3
 
   #     - uses: isbang/compose-action@v1.5.1
   #       with:
@@ -129,7 +129,7 @@ jobs:
           components: llvm-tools-preview
 
       - name: Install Protoc
-        uses: arduino/setup-protoc@v2
+        uses: arduino/setup-protoc@v3
 
       - uses: isbang/compose-action@v1.5.1
         with:
